@@ -22,4 +22,5 @@ public class ProductReq {
     private User Maker;
     private User Checker;
     private String Reason;
+    private String Status;
 }
