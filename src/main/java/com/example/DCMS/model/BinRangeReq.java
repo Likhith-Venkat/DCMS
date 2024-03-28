@@ -18,5 +18,4 @@ public class BinRangeReq {
     private User Maker;
     private User Checker;
     private String Reject_Reason;
-    private String Action;
 }
