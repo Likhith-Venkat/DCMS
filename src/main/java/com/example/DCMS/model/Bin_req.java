@@ -16,6 +16,5 @@ public class Bin_req {
     private User Maker;
     private User Checker;
     private String Reject_reason;
-    private String Action;
         
 }
