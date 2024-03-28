@@ -9,7 +9,7 @@ import lombok.*;
 @Getter
 @Setter
 @Document(collection="Bin_req")
-public class Bin_req {
+public class BinReq {
     @Id
     private String Bin;
     private Date created_date;

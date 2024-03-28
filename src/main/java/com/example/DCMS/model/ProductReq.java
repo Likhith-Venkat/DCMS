@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @Document(collection="Product_req")
-public class Product_req {
+public class ProductReq {
     @Id
     private String Product_Name;
     private String Selection_Criteria;
