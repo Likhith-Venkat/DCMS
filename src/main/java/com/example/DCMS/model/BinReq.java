@@ -9,13 +9,12 @@ import lombok.*;
 @Getter
 @Setter
 @Document(collection="Bin_req")
-public class Bin_req {
+public class BinReq {
     @Id
     private String Bin;
     private Date created_date;
     private User Maker;
     private User Checker;
     private String Reject_reason;
-    private String Action;
-        
+    private String Status;
 }

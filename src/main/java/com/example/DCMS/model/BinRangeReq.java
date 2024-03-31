@@ -7,7 +7,7 @@ import lombok.*;
 @Getter
 @Setter
 @Document(collection = "Bin_range_req")
-public class Bin_range_req {
+public class BinRangeReq {
     private Bin Bin;
     @Id
     private String Bin_Range_Name;
@@ -18,5 +18,5 @@ public class Bin_range_req {
     private User Maker;
     private User Checker;
     private String Reject_Reason;
-    private String Action;
+    private String Status;
 }

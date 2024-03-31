@@ -7,7 +7,7 @@ import lombok.*;
 @Getter
 @Setter
 @Document(collection = "Bin_range")
-public class Bin_range {
+public class BinRange {
     private Bin Bin;
     @Id
     private String Bin_Range_Name;
