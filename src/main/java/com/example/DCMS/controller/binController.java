@@ -2,7 +2,6 @@ package com.example.DCMS.controller;
 
 import com.example.DCMS.model.Bin;
 import com.example.DCMS.repository.BinRepository;
-import com.example.DCMS.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
