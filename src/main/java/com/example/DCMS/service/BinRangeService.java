@@ -1,7 +1,6 @@
 package com.example.DCMS.service;
 
 import com.example.DCMS.model.BinRange;
-import com.example.DCMS.model.BinRangeReq;
 import com.example.DCMS.repository.BinRangeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

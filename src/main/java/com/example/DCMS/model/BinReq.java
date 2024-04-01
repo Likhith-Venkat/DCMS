@@ -12,9 +12,9 @@ import lombok.*;
 public class BinReq {
     @Id
     private String Bin;
-    private Date created_date;
+    private Date createdDate;
     private User Maker;
     private User Checker;
-    private String Reject_reason;
+    private String RejectReason;
     private String Status;
 }
