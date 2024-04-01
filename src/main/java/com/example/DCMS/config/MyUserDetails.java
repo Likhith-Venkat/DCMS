@@ -31,6 +31,7 @@ public class MyUserDetails implements UserDetails{
         List<GrantedAuthority> authorities = new ArrayList<>();
         // Convert user roles or permissions to GrantedAuthority objects
         authorities.add(new SimpleGrantedAuthority("ROLE_"+user.getType()));
+        authorities.add(new SimpleGrantedAuthority("ROLE_"+user.getMc_type()));
         for (String Auth : user.getAccess().split(",")) {  // Assuming roles are comma-separated
             authorities.add(new SimpleGrantedAuthority(Auth));
         }

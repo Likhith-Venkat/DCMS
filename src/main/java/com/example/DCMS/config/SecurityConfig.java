@@ -44,7 +44,7 @@ public class SecurityConfig {
         return username -> {
             Optional<User> user = ur.findById(username);
             if (user.isPresent()) {
-                System.out.println("HELLLO USERNAME");
+                System.out.println("HELLO USERNAME");
                 return new MyUserDetails(user.get()); // Create a custom UserDetails implementation
             }
             throw new UsernameNotFoundException("User not found with username: " + username);
