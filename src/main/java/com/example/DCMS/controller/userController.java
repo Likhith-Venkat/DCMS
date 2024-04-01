@@ -5,6 +5,7 @@ import com.example.DCMS.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -16,18 +17,19 @@ public class userController
 {
     @Autowired
     UserRepository ur;
-
-    @GetMapping(path = "/public/getallusers")
-    public ResponseEntity<List<User>> getAllUsers()
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @GetMapping(path = "/getallusers")
+    public String getAllUsers()
     {
-        List<User> res = new ArrayList<>(ur.findAll());
-        if(res.isEmpty())
-        {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return "Hello world";
 
-        }
-        System.out.println("HELLO");
-        return new ResponseEntity<>(res, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/sayhi")
+    public String sayhi()
+    {
+        return "sayhi";
 
     }
     @GetMapping(path = "/getuserbyid/{username}")
@@ -40,9 +42,11 @@ public class userController
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-    @PostMapping(path="/adduser")
+    @PostMapping(path="/public/adduser")
     public  ResponseEntity<User> addUser(@RequestBody User newUser)
     {
+        String hashpswd = passwordEncoder.encode(newUser.getPassword());
+        newUser.setPassword(hashpswd);
         User crtdUser = ur.save(newUser);
         return new ResponseEntity<>(crtdUser, HttpStatus.CREATED);
     }
