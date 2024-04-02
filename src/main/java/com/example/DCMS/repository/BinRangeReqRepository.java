@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface BinRangeReqRepository extends MongoRepository<BinRangeReq, String> {
+public interface BinRangeReqRepository extends MongoRepository<BinRangeReq, String>
+{
     List<BinRangeReq> getByStatus(String status);
 }

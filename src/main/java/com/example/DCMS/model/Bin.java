@@ -5,6 +5,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Document(collection = "Bin")
 public class Bin {
     @Id

@@ -6,6 +6,8 @@ import lombok.*;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Document(collection = "Bin_range")
 public class BinRange {
     private Bin Bin;

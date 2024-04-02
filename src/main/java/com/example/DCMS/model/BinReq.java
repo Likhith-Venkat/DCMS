@@ -8,6 +8,8 @@ import lombok.*;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Document(collection="Bin_req")
 public class BinReq {
     @Id
