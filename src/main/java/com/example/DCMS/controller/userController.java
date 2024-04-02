@@ -1,13 +1,19 @@
 package com.example.DCMS.controller;
 
+import com.example.DCMS.config.MyUserDetails;
 import com.example.DCMS.model.User;
 import com.example.DCMS.repository.UserRepository;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,16 +26,23 @@ public class userController
     @Autowired
     private PasswordEncoder passwordEncoder;
     @GetMapping(path = "/getallusers")
-    public String getAllUsers()
+    public ResponseEntity<List<User>> getAllUsers()
     {
-        return "Hello world";
+        List<User> res = new ArrayList<>(ur.findAll());
+        if(res.isEmpty())
+        {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(res, HttpStatus.OK);
 
     }
 
+    @PreAuthorize("hasAuthority('BIN')")
     @GetMapping(path = "/sayhi")
-    public String sayhi()
+    public String sayhi(Authentication auth)
     {
-        return "sayhi";
+        MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
+        return userDetails.getPassword()+userDetails.getAuthorities()+userDetails.toString();
 
     }
     @GetMapping(path = "/getuserbyid/{username}")
@@ -46,12 +59,18 @@ public class userController
     public  ResponseEntity<User> addUser(@RequestBody User newUser)
     {
         String hashpswd = passwordEncoder.encode(newUser.getPassword());
+        String Access = newUser.getAccess().toUpperCase();
+        String type = newUser.getType().toUpperCase();
+        String mctype = newUser.getMc_type().toUpperCase();
+        newUser.setType(type);
+        newUser.setAccess(Access);
+        newUser.setMc_type(mctype);
         newUser.setPassword(hashpswd);
         User crtdUser = ur.save(newUser);
         return new ResponseEntity<>(crtdUser, HttpStatus.CREATED);
     }
 
-    @GetMapping(path = "deletebyid/{id}")
+    @GetMapping(path = "/deletebyid/{id}")
     public ResponseEntity<HttpStatus> deleteById(@PathVariable String id)
     {
         try
