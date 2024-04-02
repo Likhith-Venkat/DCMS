@@ -10,11 +10,11 @@ import lombok.*;
 @NoArgsConstructor
 @Document(collection = "Bin_range")
 public class BinRange {
-    private Bin Bin;
+    private Bin bin;
     @Id
-    private String Bin_Range_Name;
-    private Integer Product_Code;
-    private Integer From_Card_Number;
-    private Integer To_Card_Number;
-    private String Network_Type;
+    private String bin_Range_Name;
+    private Integer product_Code;
+    private Integer from_Card_Number;
+    private Integer to_Card_Number;
+    private String network_Type;
 }

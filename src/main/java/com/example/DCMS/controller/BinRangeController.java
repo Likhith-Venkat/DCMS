@@ -17,12 +17,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
 @RestController
 @PreAuthorize("hasAuthority('BINRANGE')")
-
 public class BinRangeController
 {
     @Autowired
@@ -36,6 +36,8 @@ public class BinRangeController
 
     @Autowired
     BinRepository breq;
+
+
 
     @PreAuthorize("hasRole('CHECKER')")
     @PostMapping(path = "/approvebinrange")
@@ -67,8 +69,12 @@ public class BinRangeController
     }
     @PreAuthorize("hasRole('CHECKER')")
     @PostMapping(path = "/rejectbinrange")
-    public ResponseEntity<BinRangeReq> rejectBinRange(Authentication auth, @RequestBody BinRangeReq brreq, @RequestBody String rejectReason)
+    public ResponseEntity<BinRangeReq> rejectBinRange(Authentication auth,  @RequestBody BinRangeReqDTO req)
     {
+        System.out.println("HELLO I am in");
+        BinRangeReq brreq = req.getBrreq();
+        System.out.println(brreq);
+        String rejectReason = req.getRejectReason();
         MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
         if (Objects.equals(brreq.getStatus(), "PENDING"))
         {
@@ -103,12 +109,17 @@ public class BinRangeController
     }
     @PreAuthorize("hasRole('ROLE_MAKER')")
     @PostMapping(path = "/addbinrangereq")
-    public ResponseEntity<BinRangeReq> addBinRangeReq(Authentication auth, @RequestBody String Binno,  @RequestBody String Bin_Range_Name, @RequestBody Integer Product_Code, @RequestBody Integer From_Card_Number, @RequestBody Integer To_Card_Number, @RequestBody String Network_Type)
+    public ResponseEntity<BinRangeReq> addBinRangeReq(Authentication auth, @RequestBody Map<String, Object> req)
     {
+        String Binno = (String) req.get("binno");
+        String Bin_Range_Name = (String) req.get("bin_Range_Name");
+        Integer Product_Code = (Integer) req.get("product_Code");
+        Integer From_Card_Number = (Integer) req.get("from_Card_Number");
+        Integer To_Card_Number = (Integer) req.get("to_Card_Number");
+        String Network_Type = (String) req.get("network_Type") ;
         MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
         Optional<Bin> bin = breq.findById(Binno);
         Bin bin1;
-        System.out.println("HELLO I am in");
         if(bin.isPresent())
         {
             bin1 = bin.get();
