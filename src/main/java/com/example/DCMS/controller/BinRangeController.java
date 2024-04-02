@@ -22,10 +22,12 @@ import java.util.Optional;
 
 @RestController
 @PreAuthorize("hasAuthority('BINRANGE')")
+
 public class BinRangeController
 {
     @Autowired
     BinRangeRepository brr;
+
     @Autowired
     BinRangeReqRepository brrr;
 
@@ -134,5 +136,6 @@ public class BinRangeController
     public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied: You do not have permission to access this resource.");
     }
+
 
 }
