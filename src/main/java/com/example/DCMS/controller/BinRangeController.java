@@ -47,15 +47,8 @@ public class BinRangeController
         if (Objects.equals(brreq.getStatus(), "PENDING"))
         {
             brreq.setStatus("ACCEPTED");
-            Optional<User> ckr = ur.findById(userDetails.getUsername());
-            if(ckr.isPresent())
-            {
-                brreq.setChecker(ckr.get());
-            }
-            else
-            {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
+            brreq.setChecker(userDetails.getUsername());
+
             BinRangeReq brreq1 = brrr.save(brreq);
             BinRange br = new BinRange(brreq1.getBin(), brreq1.getBin_Range_Name(), brreq1.getProduct_Code(), brreq1.getFrom_Card_Number(), brreq1.getTo_Card_Number(), brreq1.getNetwork_Type());
             BinRange brr1 = brr.save(br);
@@ -79,16 +72,8 @@ public class BinRangeController
         if (Objects.equals(brreq.getStatus(), "PENDING"))
         {
             brreq.setStatus("REJECTED");
-            Optional<User> ckr = ur.findById(userDetails.getUsername());
-            if(ckr.isPresent())
-            {
-                brreq.setChecker(ckr.get());
-            }
-            else
-            {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-            brreq.setReject_Reason(rejectReason);
+            brreq.setChecker(userDetails.getUsername());
+            brreq.setRejectReason(rejectReason);
             BinRangeReq brreq1 = brrr.save(brreq);
 
             return new ResponseEntity<>(brreq1, HttpStatus.OK);
@@ -124,21 +109,11 @@ public class BinRangeController
         {
             bin1 = bin.get();
         }
-        else
-        {
+        else {
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
-        Optional<User> usr1 =  ur.findById(userDetails.getUsername());
-        User usr;
-        if(usr1.isPresent())
-        {
-            usr = usr1.get();
-        }
-        else
-        {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        BinRangeReq brreq = new BinRangeReq(bin1, Bin_Range_Name, Product_Code, From_Card_Number, To_Card_Number, Network_Type, usr, null, null, "PENDING");
+
+        BinRangeReq brreq = new BinRangeReq(bin1, Bin_Range_Name, Product_Code, From_Card_Number, To_Card_Number, Network_Type, userDetails.getUsername(), null, null, "PENDING");
         BinRangeReq savedbrr = brrr.save(brreq);
         return new ResponseEntity<>(savedbrr, HttpStatus.CREATED);
     }

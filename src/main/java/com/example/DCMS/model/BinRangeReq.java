@@ -17,8 +17,8 @@ public class BinRangeReq {
     private Integer from_Card_Number;
     private Integer to_Card_Number;
     private String network_Type;
-    private User maker;
-    private User checker;
-    private String reject_Reason;
+    private String maker;
+    private String checker;
+    private String rejectReason;
     private String status;
 }
