@@ -5,9 +5,12 @@ import com.example.DCMS.model.*;
 import com.example.DCMS.repository.*;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import org.bson.types.ObjectId;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -18,12 +21,11 @@ import org.bson.Document;
 import org.springframework.web.server.ResponseStatusException;
 
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import javax.print.Doc;
+import java.util.*;
 
 @RestController
-@PreAuthorize("hasAuthority('BINRANGE')")
+@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/mc")
 public class objectsController
 {
@@ -34,66 +36,58 @@ public class objectsController
 
 
 
-    //    @PreAuthorize("hasRole('CHECKER')")
-//    @PostMapping(path = "/approvebinrange")
-//    public ResponseEntity<BinRange> approveBinRange(Authentication auth, @RequestBody BinRangeReq brreq)
-//    {
-//        MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
-//        if (Objects.equals(brreq.getStatus(), "PENDING"))
-//        {
-//            brreq.setStatus("ACCEPTED");
-//            Optional<User> ckr = ur.findById(userDetails.getUsername());
-//            if(ckr.isPresent())
-//            {
-//                brreq.setChecker(ckr.get());
-//            }
-//            else
-//            {
-//                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//            }
-//            BinRangeReq brreq1 = brrr.save(brreq);
-//            BinRange br = new BinRange(brreq1.getBin(), brreq1.getBin_Range_Name(), brreq1.getProduct_Code(), brreq1.getFrom_Card_Number(), brreq1.getTo_Card_Number(), brreq1.getNetwork_Type());
-//            BinRange brr1 = brr.save(br);
-//            return new ResponseEntity<>(brr1, HttpStatus.CREATED);
-//        }
-//        else
-//        {
-//            return new ResponseEntity<>(HttpStatus.ALREADY_REPORTED);
-//        }
-//
-//    }
-//    @PreAuthorize("hasRole('CHECKER')")
-//    @PostMapping(path = "/rejectbinrange")
-//    public ResponseEntity<BinRangeReq> rejectBinRange(Authentication auth,  @RequestBody BinRangeReqDTO req)
-//    {
-//        System.out.println("HELLO I am in");
-//        BinRangeReq brreq = req.getBrreq();
-//        System.out.println(brreq);
-//        String rejectReason = req.getRejectReason();
-//        MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
-//        if (Objects.equals(brreq.getStatus(), "PENDING"))
-//        {
-//            brreq.setStatus("REJECTED");
-//            Optional<User> ckr = ur.findById(userDetails.getUsername());
-//            if(ckr.isPresent())
-//            {
-//                brreq.setChecker(ckr.get());
-//            }
-//            else
-//            {
-//                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//            }
-//            brreq.setReject_Reason(rejectReason);
-//            BinRangeReq brreq1 = brrr.save(brreq);
-//
-//            return new ResponseEntity<>(brreq1, HttpStatus.OK);
-//        }
-//        else
-//        {
-//            return new ResponseEntity<>(HttpStatus.ALREADY_REPORTED);
-//        }
-//
-//    }
+        @PreAuthorize("hasRole('CHECKER')")
+    @PostMapping(path = "/approveobj")
+    public ResponseEntity<Document> approveobj(Authentication auth, @RequestBody String req)
+    {
+        MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
+
+        try {
+            JSONObject jsonReq = new JSONObject(req);
+            String id =jsonReq.getString("id");
+            Criteria cr = Criteria.where("_id").is(id);
+            Query qr = new Query(cr);
+            Document doc = mongoOperations.findOne(qr, Document.class, "mcobjects");
+            if(!Objects.equals(doc.getString("status"), "PENDING"))
+            {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Object Alreay checked");
+            }
+            doc.replace("status", "ACCEPTED");
+            doc.put("checker", userDetails.getUsername());
+            Document res = mongoOperations.save(doc, "mcobjects");
+            return new ResponseEntity<>(res, HttpStatus.CREATED);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body format");
+        }
+
+    }
+    @PreAuthorize("hasRole('CHECKER')")
+    @PostMapping(path = "/rejectobj")
+    public ResponseEntity<?> rejectobj(Authentication auth,  @RequestBody String req)
+    {
+        MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
+
+        try {
+            JSONObject jsonReq = new JSONObject(req);
+            String id =jsonReq.getString("id");
+            String rejectReason = jsonReq.getString("rejectReason");
+            Criteria cr = Criteria.where("_id").is(id);
+            Query qr = new Query(cr);
+            Document doc = mongoOperations.findOne(qr, Document.class, "mcobjects");
+            if(!Objects.equals(doc.getString("status"), "PENDING"))
+            {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Object Alreay checked");
+            }
+            assert doc != null;
+            doc.put("rejectReason", rejectReason);
+            doc.replace("status", "REJECTED");
+            doc.put("checker", userDetails.getUsername());
+            Document res = mongoOperations.save(doc, "mcobjects");
+            return new ResponseEntity<>(res, HttpStatus.CREATED);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body format");
+        }
+    }
     @PreAuthorize("hasRole('ROLE_MAKER')")
     @PostMapping(path = "/hello")
     public String hello(Authentication auth)
@@ -103,8 +97,8 @@ public class objectsController
 
     }
     @PreAuthorize("hasRole('ROLE_MAKER')")
-    @PostMapping(path = "/addbinrangereq")
-    public ResponseEntity<JSONObject> addBinRangeReq(Authentication auth, @RequestBody String req)
+    @PostMapping(path = "/addobj")
+    public ResponseEntity<Document> addobj(Authentication auth, @RequestBody String req)
     {
         MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
 
@@ -113,36 +107,24 @@ public class objectsController
             jsonReq.put("status", "PENDING");
             jsonReq.put("maker", userDetails.getUsername());
             Document document = Document.parse(jsonReq.toString());
-            mongoOperations.save(document, "mcobjects");
-            return ResponseEntity.ok(jsonReq);
+            document.put("_id", UUID.randomUUID().toString());
+            Document res = mongoOperations.save(document, "mcobjects");
+            return new ResponseEntity<>(res, HttpStatus.CREATED);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body format");
         }
-//        MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
-//        req.setMaker(userDetails.getUsername());
-//        req.setStatus("PENDING");
-
-//        if(bin.isPresent())
-//        {
-//            bin1 = bin.get();
-//        }
-//        else
-//        {
-//            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-//        }
-//        Optional<User> usr1 =  ur.findById(userDetails.getUsername());
-//        User usr;
-//        if(usr1.isPresent())
-//        {
-//            usr = usr1.get();
-//        }
-//        else
-//        {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//        BinRangeReq brreq = new BinRangeReq(bin1, Bin_Range_Name, Product_Code, From_Card_Number, To_Card_Number, Network_Type, usr, null, null, "PENDING");
-//        BinRangeReq savedbrr = brrr.save(brreq);
-//        return new ResponseEntity<>(savedbrr, HttpStatus.CREATED);
+    }
+    @GetMapping(path = "/get")
+    public List<Document> get(Authentication auth, @RequestBody String request){
+        MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
+        try{
+            JSONObject jsonObject =  new JSONObject(request);
+            Criteria criteria = Criteria.where("status").is(jsonObject.get("status")).and("objectType").is(jsonObject.get("objectType"));
+            Query query = new Query(criteria);
+            return mongoOperations.find(query,Document.class, "mcobjects");
+        } catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @ExceptionHandler(AccessDeniedException.class)
