@@ -5,6 +5,7 @@ import com.example.DCMS.model.*;
 import com.example.DCMS.service.*;
 import com.example.DCMS.repository.BinRepository;
 import com.example.DCMS.repository.BinReqRepository;
+import com.example.DCMS.repository.UserRepository;
 
 import java.util.Date;
 import java.util.Objects;
@@ -20,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@PreAuthorize("hasAuthority('BIN')")
 public class binController {
     @Autowired
     BinReqRepository brr;
@@ -27,25 +29,29 @@ public class binController {
     @Autowired
     BinRepository br;
 
-//    @GetMapping(path = "mc/getallbins")
-//    @Secured("ADMIN")
-//    public String getAllBins(){
-//        return "bins";
-//    }
-//
-//    @PostMapping(path = "mc/addbin")
-//    @PreAuthorize("hasRole('ADMIN') and hasRole('MAKER')")
-//    public ResponseEntity<BinReq> addBin(@RequestBody String bin){
+    @Autowired
+    UserRepository ur;
+
+    @GetMapping(path = "mc/getallbins")
+    public String getAllBins(){
+       return "bins";
+    }
+
+//   @PostMapping(path = "mc/addbin")
+//   @PreAuthorize("hasRole('ADMIN') and hasRole('MAKER')")
+//    public ResponseEntity<BinReq> addBinReq(Authentication auth, @RequestBody String bin){
 //        BinReq binReq = new BinReq();
 //        binReq.setBin(bin);
-////        binReq.setMaker(currentUser);
+//        MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
+//        Optional<User> currentUser =  ur.findById(userDetails.getUsername());
+//        binReq.setMaker(currentUser);
 //        binReq.setCreatedDate(new Date());
 //
 //        BinReq savedReq = brr.save(binReq);
 //
 //        return new ResponseEntity<>(savedReq, HttpStatus.CREATED);
 //    }
-
+//
 
     @PostMapping(path = "/approvebin")
     public ResponseEntity<Bin> approveBin(Authentication auth, @RequestBody Bin bin)
