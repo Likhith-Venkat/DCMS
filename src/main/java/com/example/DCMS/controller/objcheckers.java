@@ -43,7 +43,7 @@ public class objcheckers {
     public Boolean isUnique(String objectType, String key, String value)
     {
 
-        Criteria cr = Criteria.where("objectType").is(objectType).and(key).is(value);
+        Criteria cr = Criteria.where("objectType").is(objectType).and(key).is(value).and("status").is("ACCEPTED");
         Query qr = new Query(cr);
         if(mongoOperations.findOne(qr, Document.class, "mcobjects")!= null) {
             return false;
@@ -52,7 +52,7 @@ public class objcheckers {
     }
     public Boolean exists(String objectType, String key, String value)
     {
-        Criteria cr1 = Criteria.where("objectType").is(objectType).and(key).is(value);
+        Criteria cr1 = Criteria.where("objectType").is(objectType).and(key).is(value).and("status").is("ACCEPTED");
         Query qr1 = new Query(cr1);
         if(mongoOperations.findOne(qr1, Document.class, "mcobjects")== null)
         {
@@ -67,8 +67,10 @@ public class objcheckers {
         switch(doc.getString("objectType")) {
             case "BIN":
                 rtn = isUnique("BIN", "bin", doc.getString("bin"));
+                break;
             case "BINRANGE":
                 rtn = exists("BIN", "bin", doc.getString("bin")) && isUnique("BINRANGE", "binrangeName", doc.getString("binrangeName"));
+                break;
             case "PRODUCT":
                 rtn = isUnique("PRODUCT", "productName", doc.getString("productName"));
                 break;

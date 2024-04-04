@@ -46,9 +46,18 @@ public class objectsController
             {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Object Already checked");
             }
+            if(!objchks.checkUniqueObjs(doc))
+            {
+                doc.replace("status", "REJECTED");
+                doc.replace("rejectReason", "Accept conflict");
+                Document res = mongoOperations.save(doc, "mcobjects");
+                return new ResponseEntity<>(res, HttpStatus.CREATED);
+            }
             doc.replace("status", "ACCEPTED");
             doc.put("checker", userDetails.getUsername());
+
             Document res = mongoOperations.save(doc, "mcobjects");
+
             objchks.ifChannelLimitAddToProduct(res);
             objchks.ifFeeConfigAddToProduct(res);
             return new ResponseEntity<>(res, HttpStatus.CREATED);
