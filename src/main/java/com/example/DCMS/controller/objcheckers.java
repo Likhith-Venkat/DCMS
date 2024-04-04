@@ -60,9 +60,9 @@ public class objcheckers {
         return true;
     }
 
-    public Boolean checkUniqueObjs(Document doc)
-    {
+    public Boolean checkUniqueObjs(Document doc) {
         String UniqueID = doc.getString("objectType");
         boolean rtn = isUnique(UniqueID, doc.getString(UniqueID));
         return rtn;
+    }
 }
