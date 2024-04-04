@@ -1,7 +1,6 @@
 package com.example.DCMS.controller;
 
 import com.example.DCMS.config.MyUserDetails;
-
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -23,8 +22,6 @@ import java.util.*;
 @RequestMapping("/mc")
 public class objectsController
 {
-
-
     @Autowired
     MongoOperations mongoOperations;
     @Autowired
@@ -32,7 +29,7 @@ public class objectsController
 
 
 
-        @PreAuthorize("hasRole('CHECKER')")
+    @PreAuthorize("hasRole('CHECKER')")
     @PutMapping(path = "/approveobj")
     public ResponseEntity<Document> approveobj(Authentication auth, @RequestBody String req)
     {
@@ -47,7 +44,7 @@ public class objectsController
             assert doc != null;
             if(!Objects.equals(doc.getString("status"), "PENDING"))
             {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Object Alreay checked");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Object Already checked");
             }
             doc.replace("status", "ACCEPTED");
             doc.put("checker", userDetails.getUsername());
@@ -137,6 +134,4 @@ public class objectsController
     public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied: You do not have permission to access this resource.");
     }
-
-
 }

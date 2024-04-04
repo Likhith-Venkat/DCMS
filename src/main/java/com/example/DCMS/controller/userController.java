@@ -3,15 +3,11 @@ package com.example.DCMS.controller;
 import com.example.DCMS.config.MyUserDetails;
 import com.example.DCMS.model.User;
 import com.example.DCMS.repository.UserRepository;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
-
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,7 +35,6 @@ public class userController
 
     }
 
-    @PreAuthorize("hasAuthority('BIN')")
     @GetMapping(path = "/sayhi")
     public String sayhi(Authentication auth)
     {
@@ -91,6 +86,4 @@ public class userController
     public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied: You do not have permission to access this resource.");
     }
-
-
 }
