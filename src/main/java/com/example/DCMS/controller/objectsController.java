@@ -26,9 +26,6 @@ public class objectsController
     MongoOperations mongoOperations;
     @Autowired
     objcheckers objchks;
-
-
-
     @PreAuthorize("hasRole('CHECKER')")
     @PutMapping(path = "/approveobj")
     public ResponseEntity<Document> approveobj(Authentication auth, @RequestBody String req)
@@ -55,7 +52,6 @@ public class objectsController
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body format");
         }
-
     }
     @PreAuthorize("hasRole('CHECKER')")
     @PutMapping(path = "/rejectobj")
@@ -101,7 +97,6 @@ public class objectsController
         MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
 
         try {
-
             JSONObject jsonReq = new JSONObject(req);
             jsonReq.put("status", "PENDING");
             jsonReq.put("maker", userDetails.getUsername());

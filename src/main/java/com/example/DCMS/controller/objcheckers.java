@@ -40,10 +40,10 @@ public class objcheckers {
 
     }
 
-    public Boolean isUnique(String objectType, String key, String value)
+    public Boolean isUnique(String objectType, String value)
     {
 
-        Criteria cr = Criteria.where("objectType").is(objectType).and(key).is(value);
+        Criteria cr = Criteria.where("objectType").is(objectType).and(objectType).is(value);
         Query qr = new Query(cr);
         if(mongoOperations.findOne(qr, Document.class, "mcobjects")!= null) {
             return false;
@@ -63,22 +63,26 @@ public class objcheckers {
 
     public Boolean checkUniqueObjs(Document doc)
     {
-        Boolean rtn = false;
-        switch(doc.getString("objectType")) {
-            case "BIN":
-                rtn = isUnique("BIN", "bin", doc.getString("bin"));
-            case "BINRANGE":
-                rtn = exists("BIN", "bin", doc.getString("bin")) && isUnique("BINRANGE", "binrangeName", doc.getString("binrangeName"));
-            case "PRODUCT":
-                rtn = isUnique("PRODUCT", "productName", doc.getString("productName"));
-                break;
-            case "CHANNELLIMIT":
-                rtn = exists("PRODUCT", "productName", doc.getString("productName"));
-                break;
-            case "FEECONFIG":
-                rtn = exists("PRODUCT", "productName", doc.getString("productName"));
-                break;
-        }
+        String UniqueID = doc.getString("objectType");
+        boolean rtn = isUnique(UniqueID, doc.getString(UniqueID));
         return rtn;
+//        Criteria criteria = Criteria.where(doc.getString("Uni"))
+//        Boolean rtn = false;
+//        switch(doc.getString("objectType")) {
+//            case "BIN":
+//                rtn = isUnique("BIN", "bin", doc.getString("bin"));
+//            case "BINRANGE":
+//                rtn = exists("BIN", "bin", doc.getString("bin")) && isUnique("BINRANGE", "binrangeName", doc.getString("binrangeName"));
+//            case "PRODUCT":
+//                rtn = isUnique("PRODUCT", "productName", doc.getString("productName"));
+//                break;
+//            case "CHANNELLIMIT":
+//                rtn = exists("PRODUCT", "productName", doc.getString("productName"));
+//                break;
+//            case "FEECONFIG":
+//                rtn = exists("PRODUCT", "productName", doc.getString("productName"));
+//                break;
+//        }
+//        return rtn;
     }
 }
