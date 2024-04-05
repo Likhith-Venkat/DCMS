@@ -26,14 +26,15 @@ public class MakerCheckerController {
     RestTemplate restTemplate;
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('SUPPORT')")
-    @PostMapping("/process")
-    public ResponseEntity<?> processMakerCheckerRequest(@RequestBody MakerCheckerRequest request) {
+    @PostMapping("/{uri}")
+    public ResponseEntity<?> processMakerCheckerRequest(@PathVariable String uri, @RequestBody MakerCheckerRequest request) {
         try {
             validateRequest(request);
             MyUserDetails userDetails = getCurrentUserDetails();
             request.setMadeDate(new Date());
             request.setStatus("PENDING");
             request.setMaker(userDetails.getUsername());
+            request.setUri(uri);
             Document requestDocument = convertToDocument(request);
             mongoOperations.save(requestDocument, "maker_checker_requests");
             return new ResponseEntity<>("Request successfully submitted for approval.", HttpStatus.CREATED);
@@ -112,6 +113,7 @@ public class MakerCheckerController {
     }
 
     private MyUserDetails getCurrentUserDetails() {
+        //gets user details from the /auth middleware containing user credentials
         return null; // Placeholder implementation
     }
 
@@ -128,9 +130,25 @@ public class MakerCheckerController {
 
     private void forwardHttpRequest(String method, String uri, String requestBody) {
         try {
-            restTemplate.postForEntity(uri, requestBody, String.class);
+            switch (method.toUpperCase()) {
+                case "GET":
+                    restTemplate.getForEntity(uri, String.class);
+                    break;
+                case "POST":
+                    restTemplate.postForEntity(uri, requestBody, String.class);
+                    break;
+                case "PUT":
+                    restTemplate.put(uri, requestBody);
+                    break;
+                case "DELETE":
+                    restTemplate.delete(uri);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unsupported HTTP method: " + method);
+            }
         } catch (Exception e) {
             throw new RuntimeException("Failed to forward the request: " + e.getMessage());
         }
     }
+    
 }
