@@ -24,7 +24,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(AlreadyExistsException.class)
     public ResponseEntity<ErrorMessage> alreadyExistsException(AlreadyExistsException ex, WebRequest request) {
         ErrorMessage message = new ErrorMessage(
-                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_ACCEPTABLE.value(),
                 new Date(),
                 ex.getMessage(),
                 request.getDescription(false));

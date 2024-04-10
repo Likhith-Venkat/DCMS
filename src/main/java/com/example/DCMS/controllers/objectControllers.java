@@ -1,5 +1,7 @@
 package com.example.DCMS.controllers;
 
+import com.example.DCMS.exception.AlreadyExistsException;
+import com.example.DCMS.exception.ResourceNotFoundException;
 import com.example.DCMS.models.dataObject;
 import com.example.DCMS.repositories.dataObjectRepo;
 import org.json.JSONObject;
@@ -38,18 +40,15 @@ public class objectControllers
         try {
             JSONObject jsonReq = new JSONObject(req);
             String id =jsonReq.getString("id");
-            Optional<dataObject> co = dor.findById(id);
-            dataObject currentObject;
-            if(co.isPresent())
-                currentObject = co.get();
-            else
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Object id does not match with any row");
+            Optional<dataObject> co = Optional.ofNullable(dor.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("Object cannot be found.")));
+
+            dataObject currentObject= co.get();
             if(!Objects.equals(currentObject.getStatus(), "PENDING"))
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Object Already checked");
+                throw new AlreadyExistsException("Object Already checked");
 
             currentObject.setStatus("APPROVED");
             dataObject savedObject = dor.save(currentObject);
-//            SEND TO DCMS BACKEND
             return new ResponseEntity<>(savedObject, HttpStatus.OK);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body format");
@@ -63,14 +62,11 @@ public class objectControllers
             JSONObject jsonReq = new JSONObject(req);
             String id =jsonReq.getString("id");
             String rejectReason = jsonReq.getString("rejectReason");
-            Optional<dataObject> co = dor.findById(id);
-            dataObject currentObject;
-            if(co.isPresent())
-                currentObject = co.get();
-            else
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Object id does not match with any row");
+            Optional<dataObject> co = Optional.of(dor.findById(id)
+                    .orElseThrow(()-> new ResourceNotFoundException("Object Not Found")));
+            dataObject currentObject= co.get();
             if(!Objects.equals(currentObject.getStatus(), "PENDING"))
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Object Already checked");
+                throw new AlreadyExistsException("Object Already checked");
             currentObject.setStatus("REJECTED");
             currentObject.setRejectReason(rejectReason);
             dataObject savedObject = dor.save(currentObject);
