@@ -21,10 +21,11 @@ public class dataObject {
     private String uri;
     private String requestBody;
     private Map<String, String> requestHeaders;
-    private String maker;
-    private String checker;
-    private Date madeDate;
-    private Date checkedDate;
+    private String userEmail;
+    private String username;
+    private Object data;
+    private Date createdDate;
     private String status;
     private String objectType;
+    private String rejectReason;
 }

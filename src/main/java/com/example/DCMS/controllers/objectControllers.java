@@ -1,5 +1,7 @@
 package com.example.DCMS.controllers;
 
+import com.example.DCMS.models.dataObject;
+import com.example.DCMS.repositories.dataObjectRepo;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -17,9 +19,9 @@ import java.util.*;
 @RequestMapping("/mc")
 public class objectControllers
 {
-    @Autowired
-    MongoOperations mongoOperations;
 
+    @Autowired
+    dataObjectRepo dor;
 
     @GetMapping(path = "/test")
     public ResponseEntity<?> helloWorld()
@@ -29,102 +31,79 @@ public class objectControllers
     }
 
 
-//    @PutMapping(path = "/approveobj")
-//    public ResponseEntity<Document> approveobj(Authentication auth, @RequestBody String req)
-//    {
-//        MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
-//
-//        try {
-//            JSONObject jsonReq = new JSONObject(req);
-//            String id =jsonReq.getString("id");
-//            Criteria cr = Criteria.where("_id").is(id);
-//            Query qr = new Query(cr);
-//            Document doc = mongoOperations.findOne(qr, Document.class, "mcobjects");
-//            assert doc != null;
-//            if(!Objects.equals(doc.getString("status"), "PENDING"))
-//            {
-//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Object Already checked");
-//            }
-//            if(!objchks.checkUniqueObjs(doc))
-//            {
-//                doc.replace("status", "REJECTED");
-//                doc.replace("rejectReason", "Accept conflict");
-//                Document res = mongoOperations.save(doc, "mcobjects");
-//                return new ResponseEntity<>(res, HttpStatus.CREATED);
-//            }
-//            doc.replace("status", "ACCEPTED");
-//            doc.put("checker", userDetails.getUsername());
-//
-//            Document res = mongoOperations.save(doc, "mcobjects");
-//
-//            objchks.ifChannelLimitAddToProduct(res);
-//            objchks.ifFeeConfigAddToProduct(res);
-//            return new ResponseEntity<>(res, HttpStatus.CREATED);
-//        } catch (Exception e) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body format");
-//        }
-//    }
-//    @PutMapping(path = "/rejectobj")
-//    public ResponseEntity<?> rejectobj(Authentication auth,  @RequestBody String req)
-//    {
-//        MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
-//
-//        try {
-//
-//            JSONObject jsonReq = new JSONObject(req);
-//            String id =jsonReq.getString("id");
-//            String rejectReason = jsonReq.getString("rejectReason");
-//            Criteria cr = Criteria.where("_id").is(id);
-//            Query qr = new Query(cr);
-//            Document doc = mongoOperations.findOne(qr, Document.class, "mcobjects");
-//            if(!Objects.equals(doc.getString("status"), "PENDING"))
-//            {
-//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Object Alreay checked");
-//            }
-//            assert doc != null;
-//            doc.put("rejectReason", rejectReason);
-//            doc.replace("status", "REJECTED");
-//            doc.put("checker", userDetails.getUsername());
-//            Document res = mongoOperations.save(doc, "mcobjects");
-//
-//            return new ResponseEntity<>(res, HttpStatus.CREATED);
-//        } catch (Exception e) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body format");
-//        }
-//    }
-//    @PostMapping(path = "/addobj")
-//    public ResponseEntity<Document> addobj(Authentication auth, @RequestBody String req)
-//    {
-//        MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
-//
-//        try {
-//            JSONObject jsonReq = new JSONObject(req);
-//            jsonReq.put("status", "PENDING");
-//            jsonReq.put("maker", userDetails.getUsername());
-//            Document document = Document.parse(jsonReq.toString());
-//            document.put("_id", UUID.randomUUID().toString());
-//            if(!objchks.checkUniqueObjs(document))
-//            {
-//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Object already exists/wrong attributes");
-//            }
-//            Document res = mongoOperations.save(document, "mcobjects");
-//            return new ResponseEntity<>(res, HttpStatus.CREATED);
-//        } catch (Exception e) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body format");
-//        }
-//    }
-//    @GetMapping(path = "/get")
-//    public List<Document> get(Authentication auth, @RequestBody String request){
-//        MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
-//        try{
-//            JSONObject jsonObject =  new JSONObject(request);
-//            Criteria criteria = Criteria.where("status").is(jsonObject.get("status")).and("objectType").is(jsonObject.get("objectType"));
-//            Query query = new Query(criteria);
-//            return mongoOperations.find(query,Document.class, "mcobjects");
-//        } catch (Exception e){
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-//        }
-//    }
+    @PutMapping(path = "/approveobj")
+    public ResponseEntity<?> approveobj(@RequestBody String req)
+    {
+
+        try {
+            JSONObject jsonReq = new JSONObject(req);
+            String id =jsonReq.getString("id");
+            Optional<dataObject> co = dor.findById(id);
+            dataObject currentObject;
+            if(co.isPresent())
+                currentObject = co.get();
+            else
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Object id does not match with any row");
+            if(!Objects.equals(currentObject.getStatus(), "PENDING"))
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Object Already checked");
+
+            currentObject.setStatus("APPROVED");
+            dataObject savedObject = dor.save(currentObject);
+//            SEND TO DCMS BACKEND
+            return new ResponseEntity<>(savedObject, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body format");
+        }
+    }
+    @PutMapping(path = "/rejectobj")
+    public ResponseEntity<?> rejectobj(@RequestBody String req)
+    {
+        try {
+
+            JSONObject jsonReq = new JSONObject(req);
+            String id =jsonReq.getString("id");
+            String rejectReason = jsonReq.getString("rejectReason");
+            Optional<dataObject> co = dor.findById(id);
+            dataObject currentObject;
+            if(co.isPresent())
+                currentObject = co.get();
+            else
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Object id does not match with any row");
+            if(!Objects.equals(currentObject.getStatus(), "PENDING"))
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Object Already checked");
+            currentObject.setStatus("REJECTED");
+            currentObject.setRejectReason(rejectReason);
+            dataObject savedObject = dor.save(currentObject);
+            return new ResponseEntity<>(savedObject, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body format");
+        }
+    }
+    @PostMapping(path = "/addobj")
+    public ResponseEntity<dataObject> addobj(@RequestBody dataObject req)
+    {
+
+        try {
+            req.setStatus("PENDING");
+            req.setObjectType(req.getObjectType().toUpperCase());
+            dataObject savedObject = dor.save(req);
+            return new ResponseEntity<>(savedObject, HttpStatus.CREATED);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body format");
+        }
+    }
+    @GetMapping(path = "/get")
+    public ResponseEntity<List<dataObject>> get(@RequestBody String request){
+        try{
+            JSONObject jsonObject =  new JSONObject(request);
+            String objectType = jsonObject.getString("objectType");
+            String status = jsonObject.getString("status");
+            List<dataObject> dolist= dor.findByStatusAndObjectType(status, objectType);
+            return new ResponseEntity<>(dolist, HttpStatus.OK);
+        } catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+    }
 
 
 }
