@@ -10,7 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.bson.Document;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
@@ -22,8 +23,12 @@ public class MakerCheckerController {
     @Autowired
     MongoOperations mongoOperations;
 
+    private final WebClient webClient;
     @Autowired
-    RestTemplate restTemplate;
+    public MakerCheckerController(WebClient.Builder webClientBuilder) {
+        this.webClient = webClientBuilder.build();
+    }
+
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('SUPPORT')")
     @PostMapping("/{uri}")
@@ -132,16 +137,16 @@ public class MakerCheckerController {
         try {
             switch (method.toUpperCase()) {
                 case "GET":
-                    restTemplate.getForEntity(uri, String.class);
+                    webClient.get().uri(uri).retrieve().bodyToMono(String.class).block();
                     break;
                 case "POST":
-                    restTemplate.postForEntity(uri, requestBody, String.class);
+                    webClient.post().uri(uri).body(BodyInserters.fromValue(requestBody)).retrieve().bodyToMono(String.class).block();
                     break;
                 case "PUT":
-                    restTemplate.put(uri, requestBody);
+                    webClient.put().uri(uri).body(BodyInserters.fromValue(requestBody)).retrieve().bodyToMono(String.class).block();
                     break;
                 case "DELETE":
-                    restTemplate.delete(uri);
+                    webClient.delete().uri(uri).retrieve().bodyToMono(String.class).block();
                     break;
                 default:
                     throw new IllegalArgumentException("Unsupported HTTP method: " + method);
