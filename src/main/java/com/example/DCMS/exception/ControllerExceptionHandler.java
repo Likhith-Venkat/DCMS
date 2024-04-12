@@ -7,9 +7,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
 import java.util.Date;
+import java.util.logging.Logger;
 
 @ControllerAdvice
 public class ControllerExceptionHandler {
+
+    private static final Logger LOGGER = Logger.getLogger("ControllerExceptionHandler.class");
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorMessage> resourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
         ErrorMessage message = new ErrorMessage(
@@ -17,7 +20,7 @@ public class ControllerExceptionHandler {
                 new Date(),
                 ex.getMessage(),
                 request.getDescription(false));
-
+        LOGGER.warning("Resource not found");
         return new ResponseEntity<ErrorMessage>(message, HttpStatus.NOT_FOUND);
     }
 
@@ -28,7 +31,7 @@ public class ControllerExceptionHandler {
                 new Date(),
                 ex.getMessage(),
                 request.getDescription(false));
-
+        LOGGER.warning("Resource already exists");
         return new ResponseEntity<ErrorMessage>(message, HttpStatus.NOT_ACCEPTABLE);
     }
 
@@ -39,7 +42,7 @@ public class ControllerExceptionHandler {
                 new Date(),
                 ex.getMessage(),
                 request.getDescription(false));
-
+        LOGGER.warning("Internal server error");
         return new ResponseEntity<ErrorMessage>(message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
