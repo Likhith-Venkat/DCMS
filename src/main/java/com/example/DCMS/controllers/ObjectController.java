@@ -35,7 +35,6 @@ public class ObjectController
     public ResponseEntity<?> approveobj(@RequestBody String req)
     {
 
-        try {
             LOGGER.info("Executing 'approve' by checker");
             JSONObject jsonReq = new JSONObject(req);
             String id =jsonReq.getString("id");
@@ -50,15 +49,10 @@ public class ObjectController
             dataObject savedObject = dor.save(currentObject);
             LOGGER.info("Executed 'approve' by checker");
             return new ResponseEntity<>(savedObject, HttpStatus.OK);
-        } catch (Exception e) {
-            LOGGER.warning("Approval declined: BAD request");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body format");
-        }
     }
     @PutMapping(path = "/rejectobj")
     public ResponseEntity<?> rejectobj(@RequestBody String req)
     {
-        try {
             LOGGER.info("Executing 'reject' by checker");
             JSONObject jsonReq = new JSONObject(req);
             String id =jsonReq.getString("id");
@@ -73,41 +67,23 @@ public class ObjectController
             dataObject savedObject = dor.save(currentObject);
             LOGGER.info("Executed 'reject' by checker");
             return new ResponseEntity<>(savedObject, HttpStatus.OK);
-        } catch (Exception e) {
-            LOGGER.warning("Rejection declined: BAD request");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body format");
-        }
     }
     @PostMapping(path = "/addobj")
     public ResponseEntity<dataObject> addobj(@RequestBody dataObject req)
     {
-
-        try {
             LOGGER.info("Executing 'add' by maker");
             req.setStatus("PENDING");
             req.setObjectType(req.getObjectType().toUpperCase());
             dataObject savedObject = dor.save(req);
             LOGGER.info("Executed 'add' by maker");
             return new ResponseEntity<>(savedObject, HttpStatus.CREATED);
-        } catch (Exception e) {
-            LOGGER.warning("Add object declined: BAD request");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request body format");
-        }
     }
-    @GetMapping(path = "/get")
-    public ResponseEntity<List<dataObject>> get(@RequestBody String request){
-        try{
+    @GetMapping(path = "/get/{status}/{objectType}")
+    public ResponseEntity<List<dataObject>> get(@PathVariable String status, @PathVariable String objectType){
             LOGGER.info("Executing 'get'");
-            JSONObject jsonObject =  new JSONObject(request);
-            String objectType = jsonObject.getString("objectType");
-            String status = jsonObject.getString("status");
             List<dataObject> dolist= dor.findByStatusAndObjectType(status, objectType);
             LOGGER.info("Executed 'get'");
             return new ResponseEntity<>(dolist, HttpStatus.OK);
-        } catch (Exception e){
-            LOGGER.warning("Get declined: BAD request");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
     }
 
 

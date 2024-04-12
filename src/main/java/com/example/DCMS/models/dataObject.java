@@ -13,6 +13,7 @@ import java.util.Map;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Document(collection = "maker_checker_requests")
 public class dataObject {
     @Id
