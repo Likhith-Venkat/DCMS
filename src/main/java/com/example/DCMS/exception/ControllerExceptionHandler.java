@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
 import java.util.Date;
+import java.util.function.Supplier;
 import java.util.logging.Logger;
 
 @ControllerAdvice
@@ -20,7 +21,7 @@ public class ControllerExceptionHandler {
                 new Date(),
                 ex.getMessage(),
                 request.getDescription(false));
-        LOGGER.warning("Resource not found");
+        LOGGER.warning(ex.getMessage());
         return new ResponseEntity<ErrorMessage>(message, HttpStatus.NOT_FOUND);
     }
 
@@ -31,7 +32,7 @@ public class ControllerExceptionHandler {
                 new Date(),
                 ex.getMessage(),
                 request.getDescription(false));
-        LOGGER.warning("Resource already exists");
+        LOGGER.warning(ex.getMessage());
         return new ResponseEntity<ErrorMessage>(message, HttpStatus.NOT_ACCEPTABLE);
     }
 
@@ -42,7 +43,7 @@ public class ControllerExceptionHandler {
                 new Date(),
                 ex.getMessage(),
                 request.getDescription(false));
-        LOGGER.warning("Internal server error");
+        LOGGER.warning(ex.getMessage());
         return new ResponseEntity<ErrorMessage>(message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

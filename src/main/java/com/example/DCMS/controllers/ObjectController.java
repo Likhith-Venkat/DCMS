@@ -4,7 +4,6 @@ import com.example.DCMS.exception.AlreadyExistsException;
 import com.example.DCMS.exception.ResourceNotFoundException;
 import com.example.DCMS.models.dataObject;
 import com.example.DCMS.repositories.dataObjectRepo;
-import lombok.extern.log4j.Log4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,11 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 @RestController
-@Log4j
 @RequestMapping("/mc")
 public class ObjectController
 {
@@ -28,6 +25,7 @@ public class ObjectController
     @GetMapping(path = "/test")
     public ResponseEntity<?> helloWorld()
     {
+        LOGGER.info("test");
         JSONObject test = new JSONObject();
         return new ResponseEntity<>("Hello world", HttpStatus.OK);
     }
