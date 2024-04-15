@@ -31,7 +31,6 @@ public class dataObjectRepoTests
         currentObject = dataObject.builder()
                 .method("get")
                 .uri("/api/abc")
-                .requestBody("BODY")
                 .requestHeaders(mp)
                 .userEmail("abc@gmail.com")
                 .username("abc")

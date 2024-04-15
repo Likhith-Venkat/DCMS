@@ -20,6 +20,9 @@ configurations {
 repositories {
 	mavenCentral()
 }
+bootBuildImage {
+	imageName = 'dcms-image'
+}
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'

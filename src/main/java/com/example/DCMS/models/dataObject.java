@@ -20,7 +20,6 @@ public class dataObject {
     private String id;
     private String method;
     private String uri;
-    private String requestBody;
     private Map<String, String> requestHeaders;
     private String userEmail;
     private String username;

@@ -4,12 +4,16 @@ import com.example.DCMS.exception.AlreadyExistsException;
 import com.example.DCMS.exception.ResourceNotFoundException;
 import com.example.DCMS.models.dataObject;
 import com.example.DCMS.repositories.dataObjectRepo;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import org.springframework.web.client.RestTemplate;
+
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -21,6 +25,9 @@ public class ObjectController
 
     @Autowired
     dataObjectRepo dor;
+
+    @Autowired
+    ObjectMapper objectMapper;
     private static final Logger LOGGER = Logger.getLogger("ObjectController.class");
     @GetMapping(path = "/test")
     public ResponseEntity<?> helloWorld()
@@ -32,8 +39,7 @@ public class ObjectController
 
 
     @PutMapping(path = "/approveobj")
-    public ResponseEntity<?> approveobj(@RequestBody String req)
-    {
+    public ResponseEntity<?> approveobj(@RequestBody String req) throws JsonProcessingException {
 
             LOGGER.info("Executing 'approve' by checker");
             JSONObject jsonReq = new JSONObject(req);
@@ -47,8 +53,22 @@ public class ObjectController
 
             currentObject.setStatus("APPROVED");
             dataObject savedObject = dor.save(currentObject);
+            Map<String, String> headersMap = savedObject.getRequestHeaders();
+            String url = savedObject.getUri();
+            Object payload = savedObject.getData();
+            HttpHeaders headers = new HttpHeaders();
+            headersMap.forEach((key, value) -> headers.add(key, value));
+            String stringPayload = objectMapper.writeValueAsString(payload);
+            HttpEntity<String> requestEntity = new HttpEntity<>(stringPayload, headers);
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> responseEntity = restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    requestEntity,
+                    String.class
+            );
             LOGGER.info("Executed 'approve' by checker");
-            return new ResponseEntity<>(savedObject, HttpStatus.OK);
+            return responseEntity;
     }
     @PutMapping(path = "/rejectobj")
     public ResponseEntity<?> rejectobj(@RequestBody String req)
