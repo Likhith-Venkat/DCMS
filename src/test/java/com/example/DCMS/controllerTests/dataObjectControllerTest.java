@@ -78,9 +78,21 @@ public class dataObjectControllerTest
                 .content(objectMapper.writeValueAsString(currentObject)));
 
         String expectedJson = objectMapper.writeValueAsString(currentList);
-        System.out.println(response.toString());
         response.andExpect(MockMvcResultMatchers.status().is(200))
                 .andExpect(MockMvcResultMatchers.content().json(expectedJson));
+    }
+
+    @Test
+    public void shouldSubmitRequestToServiceOnApproval() throws Exception {
+        // form approve request
+
+        // mock backend service
+
+        // approve the request
+
+        // assert mock called with required info
+
+        // assert on updating backend the approval is stored in db
     }
 
     @Test
