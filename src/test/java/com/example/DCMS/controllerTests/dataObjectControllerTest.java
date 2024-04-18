@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 @AutoConfigureDataMongo
 @ExtendWith(MockitoExtension.class)
-public class dataObjectControllerTest
+class dataObjectControllerTest
 {
     @MockBean
     private dataObjectRepo dor;
@@ -74,7 +74,7 @@ public class dataObjectControllerTest
 
 
     @Test
-    public void  get_ReturnsDataObjectList() throws Exception {
+    void  get_ReturnsDataObjectList() throws Exception {
         List<dataObject> currentList = new ArrayList<>();
         currentList.add(currentObject);
         when(dor.findByStatusAndObjectType("PENDING", "BIN")).thenReturn(currentList);
@@ -90,7 +90,7 @@ public class dataObjectControllerTest
     }
 
     @Test
-    public void approve_returnsBackendResponse() throws Exception
+    void approve_returnsBackendResponse() throws Exception
     {
         when(dor.findById(Mockito.anyString())).thenReturn(Optional.ofNullable(currentObject));
         given(dor.save(Mockito.any(dataObject.class))).willAnswer((invocation -> invocation.getArgument(0)));
@@ -107,7 +107,7 @@ public class dataObjectControllerTest
     }
 
     @Test
-    public void  addobj_ReturnsDataObject() throws Exception {
+    void  addobj_ReturnsDataObject() throws Exception {
         when(dor.save(Mockito.any(dataObject.class))).thenReturn(currentObject);
 
         ResultActions response = mockMvc.perform(post("/mc/addobj")
@@ -120,7 +120,7 @@ public class dataObjectControllerTest
                 .andExpect(MockMvcResultMatchers.content().json(expectedJson));
     }
     @Test
-    public void  rejectObj_ReturnsDataObject() throws Exception {
+    void  rejectObj_ReturnsDataObject() throws Exception {
         JSONObject req = new JSONObject();
         req.put("id", "1234");
         req.put("rejectReason", "bad cred");

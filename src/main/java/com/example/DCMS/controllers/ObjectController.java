@@ -67,7 +67,6 @@ public class ObjectController
             headersMap.forEach((key, value) -> headers.add(key, value));
 
             String stringPayload = objectMapper.writeValueAsString(payload);
-            System.out.println(stringPayload);
             HttpEntity<String> requestEntity = new HttpEntity<>(stringPayload, headers);
             RestTemplate restTemplate = new RestTemplate();
             try {
@@ -85,7 +84,7 @@ public class ObjectController
                 } else {
                     savedObject.setStatus(APPROVED);
                 }
-
+                savedObject.validateBeforeSave();
                 dor.save(savedObject);
                 LOGGER.info("Executed 'approve' by checker");
 
@@ -98,6 +97,7 @@ public class ObjectController
                 } else {
                     savedObject.setStatus(APPROVED);
                 }
+                savedObject.validateBeforeSave();
                 dor.save(savedObject);
                 LOGGER.info("Error occurred while executing 'approve' by checker");
                 return new ResponseEntity<>(e.getResponseBodyAsString(), e.getStatusCode());
@@ -117,6 +117,7 @@ public class ObjectController
                 throw new AlreadyExistsException("Object Already checked");
             currentObject.setStatus(REJECTED);
             currentObject.setRejectReason(rejectReason);
+            currentObject.validateBeforeSave();
             dataObject savedObject = dor.save(currentObject);
             LOGGER.info("Executed 'reject' by checker");
             return new ResponseEntity<>(savedObject, HttpStatus.OK);
@@ -127,6 +128,7 @@ public class ObjectController
             LOGGER.info("Executing 'add' by maker");
             req.setStatus(PENDING);
             req.setObjectType(req.getObjectType().toUpperCase());
+            req.validateBeforeSave();
             dataObject savedObject = dor.save(req);
             LOGGER.info("Executed 'add' by maker");
             return new ResponseEntity<>(savedObject, HttpStatus.CREATED);
