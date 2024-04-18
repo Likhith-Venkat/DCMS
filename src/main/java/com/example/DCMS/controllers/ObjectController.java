@@ -6,6 +6,7 @@ import com.example.DCMS.models.dataObject;
 import com.example.DCMS.repositories.dataObjectRepo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -43,7 +44,7 @@ public class ObjectController
 
 
     @PutMapping(path = "/approve")
-    public ResponseEntity<String> approve(@RequestBody String req) throws JsonProcessingException {
+    public ResponseEntity<String> approve(@RequestBody String req, HttpServletRequest servletRequest) throws JsonProcessingException {
 
             LOGGER.info("Executing 'approve' by checker");
             JSONObject jsonReq = new JSONObject(req);
@@ -61,10 +62,24 @@ public class ObjectController
             String url = savedObject.getUri();
             Object payload = savedObject.getData();
             HttpHeaders headers = new HttpHeaders();
-            Map<String, String> headersMap = savedObject.getRequestHeaders();
+
+             Enumeration<String> headerNames = servletRequest.getHeaderNames();
+            while (headerNames.hasMoreElements()) {
+                String headerName = headerNames.nextElement();
+                if (!("content-type".equalsIgnoreCase(headerName) || "X-TENANT-ID".equalsIgnoreCase(headerName))) {
+                    continue;
+                }
+                System.out.println(headerName);
+                String headerValue = servletRequest.getHeader(headerName);
+                headers.add(headerName, headerValue);
+            }
 
 
-            headersMap.forEach((key, value) -> headers.add(key, value));
+            if(savedObject.getRequestHeaders() != null)
+            {
+                Map<String, String> headersMap = savedObject.getRequestHeaders();
+                headersMap.forEach((key, value) -> headers.add(key, value));
+            }
 
             String stringPayload = objectMapper.writeValueAsString(payload);
             HttpEntity<String> requestEntity = new HttpEntity<>(stringPayload, headers);
