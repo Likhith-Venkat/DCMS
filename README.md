@@ -7,6 +7,7 @@ This Spring Boot application provides endpoints for managing data objects with m
 1. `/addobj`: Used by makers to add a data object. This endpoint accepts any object.
 2. `/rejectobj`: Used by checkers to reject data objects. It accepts a JSON payload with properties: `id` (object id) and `rejectReason`.
 3. `/approveobj`: Used by checkers to approve data objects. It accepts a JSON payload with property `id`.
+4. `/get`: Used to fetch data based on `status` and `objectType`.
 
 ## Data Object Fields
 
