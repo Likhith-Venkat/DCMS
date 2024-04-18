@@ -4,8 +4,8 @@ package com.example.DCMS.controllerTests;
 import com.example.DCMS.controllers.ObjectController;
 import com.example.DCMS.models.dataObject;
 import com.example.DCMS.repositories.dataObjectRepo;
+import com.example.DCMS.DTOs.binDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.api.Assertions;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +16,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -50,16 +49,23 @@ public class dataObjectControllerTest
     public void init()
     {
         Map<String, String> mp = new HashMap<>();
-        mp.put("cookies", "abc");
-        Date dt = new Date();
+        mp.put("X-TENANT-ID", "MAHESHBANK");
+        mp.put("Content-Type", "application/json");
+        binDTO dt = binDTO.builder()
+                .binValue("43243218")
+                .checkSIExternal(false)
+                .billingCurrency("356")
+                .status(true)
+                .binType("DEBIT")
+                .build();
         currentObject = dataObject.builder()
-                .method("get")
-                .uri("/api/abc")
+                .id("1234")
+                .method("POST")
+                .uri("https://uat-dcms.m2pfintech.com/dcms-authnt/api/bins")
                 .requestHeaders(mp)
                 .userEmail("abc@gmail.com")
                 .username("abc")
-                .data("data")
-                .createdDate(dt)
+                .data(dt)
                 .status("PENDING")
                 .objectType("BIN")
                 .build();
@@ -72,7 +78,8 @@ public class dataObjectControllerTest
         List<dataObject> currentList = new ArrayList<>();
         currentList.add(currentObject);
         when(dor.findByStatusAndObjectType("PENDING", "BIN")).thenReturn(currentList);
-
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", "1234");
         ResultActions response = mockMvc.perform(get("/mc/get/PENDING/BIN")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(currentObject)));
@@ -83,16 +90,20 @@ public class dataObjectControllerTest
     }
 
     @Test
-    public void shouldSubmitRequestToServiceOnApproval() throws Exception {
-        // form approve request
+    public void approve_returnsBackendResponse() throws Exception
+    {
+        when(dor.findById(Mockito.anyString())).thenReturn(Optional.ofNullable(currentObject));
+        given(dor.save(Mockito.any(dataObject.class))).willAnswer((invocation -> invocation.getArgument(0)));
+        JSONObject req = new JSONObject();
+        req.put("id", "1234");
+        ResultActions response = mockMvc.perform(put("/mc/approve")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(req.toString()));
 
-        // mock backend service
-
-        // approve the request
-
-        // assert mock called with required info
-
-        // assert on updating backend the approval is stored in db
+        String expectedJson = objectMapper.writeValueAsString(currentObject.getData());
+        System.out.println(response.toString());
+        response.andExpect(MockMvcResultMatchers.status().is(201))
+                .andExpect(MockMvcResultMatchers.content().json(expectedJson));
     }
 
     @Test

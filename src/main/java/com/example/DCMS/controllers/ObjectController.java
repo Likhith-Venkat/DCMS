@@ -6,7 +6,6 @@ import com.example.DCMS.models.dataObject;
 import com.example.DCMS.repositories.dataObjectRepo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -26,7 +25,12 @@ public class ObjectController
 
     @Autowired
     dataObjectRepo dor;
-
+    
+    static final String APPROVED = "APPROVED";
+    static final String REJECTED = "REJECTED";
+    static final String PENDING = "PENDING";
+        
+    
     @Autowired
     ObjectMapper objectMapper;
     private static final Logger LOGGER = Logger.getLogger("ObjectController.class");
@@ -48,10 +52,10 @@ public class ObjectController
                     .orElseThrow(() -> new ResourceNotFoundException("Object cannot be found.")));
 
             dataObject currentObject= co.get();
-            if(!Objects.equals(currentObject.getStatus(), "PENDING"))
+            if(!Objects.equals(currentObject.getStatus(), PENDING))
                 throw new AlreadyExistsException("Object Already checked");
 
-            currentObject.setStatus("APPROVED");
+            currentObject.setStatus(APPROVED);
             dataObject savedObject = currentObject;
 
             String url = savedObject.getUri();
@@ -63,6 +67,7 @@ public class ObjectController
             headersMap.forEach((key, value) -> headers.add(key, value));
 
             String stringPayload = objectMapper.writeValueAsString(payload);
+            System.out.println(stringPayload);
             HttpEntity<String> requestEntity = new HttpEntity<>(stringPayload, headers);
             RestTemplate restTemplate = new RestTemplate();
             try {
@@ -75,10 +80,10 @@ public class ObjectController
 
                 // Handle the case where the response status code is 400
                 if (responseEntity.getStatusCode() == HttpStatus.BAD_REQUEST) {
-                    savedObject.setStatus("REJECTED");
+                    savedObject.setStatus(REJECTED);
                     savedObject.setRejectReason(responseEntity.toString());
                 } else {
-                    savedObject.setStatus("APPROVED");
+                    savedObject.setStatus(APPROVED);
                 }
 
                 dor.save(savedObject);
@@ -88,10 +93,10 @@ public class ObjectController
             } catch (HttpClientErrorException e) {
                 // Handle the case where the response status code is 400
                 if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
-                    savedObject.setStatus("REJECTED");
+                    savedObject.setStatus(REJECTED);
                     savedObject.setRejectReason(e.getResponseBodyAsString());
                 } else {
-                    savedObject.setStatus("APPROVED");
+                    savedObject.setStatus(APPROVED);
                 }
                 dor.save(savedObject);
                 LOGGER.info("Error occurred while executing 'approve' by checker");
@@ -108,9 +113,9 @@ public class ObjectController
             Optional<dataObject> co = Optional.of(dor.findById(id)
                     .orElseThrow(()-> new ResourceNotFoundException("Object Not Found")));
             dataObject currentObject= co.get();
-            if(!Objects.equals(currentObject.getStatus(), "PENDING"))
+            if(!Objects.equals(currentObject.getStatus(), PENDING))
                 throw new AlreadyExistsException("Object Already checked");
-            currentObject.setStatus("REJECTED");
+            currentObject.setStatus(REJECTED);
             currentObject.setRejectReason(rejectReason);
             dataObject savedObject = dor.save(currentObject);
             LOGGER.info("Executed 'reject' by checker");
@@ -120,7 +125,7 @@ public class ObjectController
     public ResponseEntity<dataObject> addobj(@RequestBody dataObject req)
     {
             LOGGER.info("Executing 'add' by maker");
-            req.setStatus("PENDING");
+            req.setStatus(PENDING);
             req.setObjectType(req.getObjectType().toUpperCase());
             dataObject savedObject = dor.save(req);
             LOGGER.info("Executed 'add' by maker");

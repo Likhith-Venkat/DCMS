@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
 import java.util.Date;
-import java.util.function.Supplier;
 import java.util.logging.Logger;
 
 @ControllerAdvice
@@ -22,7 +21,7 @@ public class ControllerExceptionHandler {
                 ex.getMessage(),
                 request.getDescription(false));
         LOGGER.warning(ex.getMessage());
-        return new ResponseEntity<ErrorMessage>(message, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(AlreadyExistsException.class)
@@ -33,7 +32,7 @@ public class ControllerExceptionHandler {
                 ex.getMessage(),
                 request.getDescription(false));
         LOGGER.warning(ex.getMessage());
-        return new ResponseEntity<ErrorMessage>(message, HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>(message, HttpStatus.NOT_ACCEPTABLE);
     }
 
     @ExceptionHandler(Exception.class)
@@ -44,6 +43,6 @@ public class ControllerExceptionHandler {
                 ex.getMessage(),
                 request.getDescription(false));
         LOGGER.warning(ex.getMessage());
-        return new ResponseEntity<ErrorMessage>(message, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
