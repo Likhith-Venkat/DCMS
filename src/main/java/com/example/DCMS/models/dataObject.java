@@ -1,5 +1,6 @@
 package com.example.DCMS.models;
 
+import com.example.DCMS.exception.documentValidationException;
 import lombok.*;
 
 import org.json.JSONObject;
@@ -39,7 +40,7 @@ public class dataObject {
         if(objectType == null)
             mp.put("objectType", "objectType cannot be null");
         if (uri == null ||data == null||objectType == null) {
-            throw new IllegalArgumentException(mp.toString());
+            throw new documentValidationException(mp);
         }
     }
 }

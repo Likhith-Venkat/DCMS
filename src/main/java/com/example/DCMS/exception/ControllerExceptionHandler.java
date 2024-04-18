@@ -35,6 +35,17 @@ public class ControllerExceptionHandler {
         return new ResponseEntity<>(message, HttpStatus.NOT_ACCEPTABLE);
     }
 
+    @ExceptionHandler(documentValidationException.class)
+    public ResponseEntity<ErrorMessage> documentValidationExceptionHandler(documentValidationException ex, WebRequest request) {
+        ErrorMessage message = new ErrorMessage(
+                HttpStatus.NOT_ACCEPTABLE.value(),
+                new Date(),
+                ex.getMessage(),
+                request.getDescription(false));
+        LOGGER.warning(ex.getMessage());
+        return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorMessage> globalExceptionHandler(Exception ex, WebRequest request) {
         ErrorMessage message = new ErrorMessage(
