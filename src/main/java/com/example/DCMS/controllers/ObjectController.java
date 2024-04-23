@@ -5,7 +5,7 @@ import com.example.DCMS.DTOs.dataObjectDTO;
 import com.example.DCMS.DTOs.rejectDTO;
 import com.example.DCMS.models.dataObject;
 import com.example.DCMS.repositories.dataObjectRepo;
-import com.example.DCMS.services.ObjectService;
+import com.example.DCMS.services.ObjectServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 public class ObjectController {
 
     @Autowired
-    private ObjectService objectService;
+    private ObjectServiceImpl objectService;
 
     @Autowired
     private dataObjectRepo dor;

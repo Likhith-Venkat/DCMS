@@ -3,13 +3,17 @@ package com.example.DCMS.models;
 import com.example.DCMS.exception.documentValidationException;
 import lombok.*;
 
-import org.json.JSONObject;
+import com.example.DCMS.enums.Status;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+
+
+
 
 @Data
 @Setter
@@ -25,7 +29,7 @@ public class dataObject {
     private String username;
     private Object data;
     private Date createdDate;
-    private String status;
+    private Status status;
     private String objectType;
     private String rejectReason;
     private String uniqueName;
