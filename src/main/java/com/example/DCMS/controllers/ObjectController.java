@@ -1,5 +1,8 @@
 package com.example.DCMS.controllers;
 
+import com.example.DCMS.DTOs.approveDTO;
+import com.example.DCMS.DTOs.dataObjectDTO;
+import com.example.DCMS.DTOs.rejectDTO;
 import com.example.DCMS.exception.AlreadyExistsException;
 import com.example.DCMS.exception.ResourceNotFoundException;
 import com.example.DCMS.models.dataObject;
@@ -44,13 +47,12 @@ public class ObjectController
 
 
     @PutMapping(path = "/approve")
-    public ResponseEntity<String> approve(@RequestBody String req, HttpServletRequest servletRequest) throws JsonProcessingException {
+    public ResponseEntity<String> approve(@RequestBody approveDTO req, HttpServletRequest servletRequest) throws JsonProcessingException {
 
             LOGGER.info("Executing 'approve' by checker");
-            JSONObject jsonReq = new JSONObject(req);
-            String id =jsonReq.getString("id");
-            String url =jsonReq.getString("url");
-            String methodType = jsonReq.getString("method");
+            String id =req.getId();
+            String url =req.getUrl();
+            String methodType = req.getMethod();
             Optional<dataObject> co = Optional.ofNullable(dor.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("Object cannot be found.")));
 
@@ -120,12 +122,11 @@ public class ObjectController
             }
     }
     @PutMapping(path = "/rejectobj")
-    public ResponseEntity<dataObject> rejectobj(@RequestBody String req)
+    public ResponseEntity<dataObject> rejectobj(@RequestBody rejectDTO req)
     {
             LOGGER.info("Executing 'reject' by checker");
-            JSONObject jsonReq = new JSONObject(req);
-            String id =jsonReq.getString("id");
-            String rejectReason = jsonReq.getString("rejectReason");
+            String id =req.getId()
+            String rejectReason = req.getRejectReason();
             Optional<dataObject> co = Optional.of(dor.findById(id)
                     .orElseThrow(()-> new ResourceNotFoundException("Object Not Found")));
             dataObject currentObject= co.get();
@@ -139,19 +140,29 @@ public class ObjectController
             return new ResponseEntity<>(savedObject, HttpStatus.OK);
     }
     @PostMapping(path = "/addobj")
-    public ResponseEntity<dataObject> addobj(@RequestBody dataObject req)
+    public ResponseEntity<dataObject> addobj(@RequestBody dataObjectDTO req)
     {
             LOGGER.info("Executing 'add' by maker");
             req.setStatus(PENDING);
             req.setObjectType(req.getObjectType().toUpperCase());
             req.setId(req.getUniqueName()+req.getObjectType());
+            dataObject currentObject = dataObject.builder()
+                    .data(req.getData())
+                    .username(req.getUsername())
+                    .userEmail(req.getUserEmail())
+                    .objectType(req.getObjectType())
+                    .status(req.getStatus())
+                    .id(req.getId())
+                    .createdDate(req.getCreatedDate())
+                    .uniqueName(req.getUniqueName())
+                    .build();
             Optional<dataObject> chk = dor.findById(req.getId());
             if(chk.isPresent())
             {
                 throw new AlreadyExistsException("Object Already exists");
             }
-            req.validateBeforeSave();
-            dataObject savedObject = dor.save(req);
+            currentObject.validateBeforeSave();
+            dataObject savedObject = dor.save(currentObject);
             LOGGER.info("Executed 'add' by maker");
             return new ResponseEntity<>(savedObject, HttpStatus.CREATED);
     }
