@@ -144,6 +144,12 @@ public class ObjectController
             LOGGER.info("Executing 'add' by maker");
             req.setStatus(PENDING);
             req.setObjectType(req.getObjectType().toUpperCase());
+            req.setId(req.getUniqueName()+req.getObjectType());
+            Optional<dataObject> chk = dor.findById(req.getId());
+            if(chk.isPresent())
+            {
+                throw new AlreadyExistsException("Object Already exists");
+            }
             req.validateBeforeSave();
             dataObject savedObject = dor.save(req);
             LOGGER.info("Executed 'add' by maker");
