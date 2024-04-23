@@ -49,6 +49,8 @@ public class ObjectController
             LOGGER.info("Executing 'approve' by checker");
             JSONObject jsonReq = new JSONObject(req);
             String id =jsonReq.getString("id");
+            String url =jsonReq.getString("url");
+            String methodType = jsonReq.getString("method");
             Optional<dataObject> co = Optional.ofNullable(dor.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("Object cannot be found.")));
 
@@ -59,7 +61,6 @@ public class ObjectController
             currentObject.setStatus(APPROVED);
             dataObject savedObject = currentObject;
 
-            String url = savedObject.getUri();
             Object payload = savedObject.getData();
             HttpHeaders headers = new HttpHeaders();
 
@@ -69,25 +70,25 @@ public class ObjectController
                 if (!("content-type".equalsIgnoreCase(headerName) || "X-TENANT-ID".equalsIgnoreCase(headerName))) {
                     continue;
                 }
-                System.out.println(headerName);
                 String headerValue = servletRequest.getHeader(headerName);
                 headers.add(headerName, headerValue);
             }
+            HttpMethod httpMethod = switch (methodType.toUpperCase()) {
+                case "POST" -> HttpMethod.POST;
+                case "GET" -> HttpMethod.GET;
+                case "PUT" -> HttpMethod.PUT;
+                default ->
+                    // Handle invalid method type
+                        throw new IllegalArgumentException("Invalid HTTP method type: " + methodType);
+            };
 
-
-            if(savedObject.getRequestHeaders() != null)
-            {
-                Map<String, String> headersMap = savedObject.getRequestHeaders();
-                headersMap.forEach((key, value) -> headers.add(key, value));
-            }
-
-            String stringPayload = objectMapper.writeValueAsString(payload);
+        String stringPayload = objectMapper.writeValueAsString(payload);
             HttpEntity<String> requestEntity = new HttpEntity<>(stringPayload, headers);
             RestTemplate restTemplate = new RestTemplate();
             try {
                 ResponseEntity<String> responseEntity = restTemplate.exchange(
                         url,
-                        HttpMethod.POST,
+                        httpMethod,
                         requestEntity,
                         String.class
                 );

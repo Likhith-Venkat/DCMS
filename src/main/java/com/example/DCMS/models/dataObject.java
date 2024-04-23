@@ -21,9 +21,6 @@ import java.util.Map;
 public class dataObject {
     @Id
     private String id;
-    private String method;
-    private String uri;
-    private Map<String, String> requestHeaders;
     private String userEmail;
     private String username;
     private Object data;
@@ -33,13 +30,11 @@ public class dataObject {
     private String rejectReason;
     public void validateBeforeSave() {
         Map<String, String> mp = new HashMap<>();
-        if(uri == null)
-            mp.put("uri", "uri cannot be null");
         if(data == null)
             mp.put("data", "data cannot be null");
         if(objectType == null)
             mp.put("objectType", "objectType cannot be null");
-        if (uri == null ||data == null||objectType == null) {
+        if (data == null||objectType == null) {
             throw new documentValidationException(mp);
         }
     }
