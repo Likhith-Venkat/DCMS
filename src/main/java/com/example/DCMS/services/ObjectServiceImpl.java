@@ -29,8 +29,7 @@ public class ObjectServiceImpl implements ObjectService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    RestTemplate restTemplate;
+    RestTemplate restTemplate = new RestTemplate();
 
     private static final Logger LOGGER = Logger.getLogger("ObjectController.class");
 
@@ -69,12 +68,13 @@ public class ObjectServiceImpl implements ObjectService {
         try {
             stringPayload = objectMapper.writeValueAsString(payload);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
+
         }
         HttpEntity<String> requestEntity = new HttpEntity<>(stringPayload, headers);
 
         try {
-            ResponseEntity<String> responseEntity = restTemplate.exchange(
+            ResponseEntity<?> responseEntity = restTemplate.exchange(
                     url,
                     httpMethod,
                     requestEntity,
@@ -82,10 +82,7 @@ public class ObjectServiceImpl implements ObjectService {
             );
 
             // Handle the case where the response status code is 400
-            if (responseEntity.getStatusCode() == HttpStatus.BAD_REQUEST) {
-                savedObject.setStatus(Status.REJECTED);
-                savedObject.setRejectReason(responseEntity.toString());
-            } else {
+            if (responseEntity.getStatusCode() != HttpStatus.BAD_REQUEST) {
                 savedObject.setStatus(Status.APPROVED);
             }
             savedObject.validateBeforeSave();
@@ -98,8 +95,6 @@ public class ObjectServiceImpl implements ObjectService {
             if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
                 savedObject.setStatus(Status.REJECTED);
                 savedObject.setRejectReason(e.getResponseBodyAsString());
-            } else {
-                savedObject.setStatus(Status.APPROVED);
             }
             savedObject.validateBeforeSave();
             dataObject returnedObject = dor.save(savedObject);

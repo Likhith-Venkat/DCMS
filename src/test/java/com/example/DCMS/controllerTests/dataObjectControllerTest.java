@@ -11,7 +11,6 @@ import com.example.DCMS.models.dataObject;
 import com.example.DCMS.repositories.dataObjectRepo;
 import com.example.DCMS.DTOs.binDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +30,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.*;
 
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
@@ -110,6 +108,23 @@ class dataObjectControllerTest
 
     @Test
     void approve() throws Exception
+    {
+        currentObject.setStatus(Status.APPROVED);
+        when(objServ.approveObject(Mockito.any(approveDTO.class), Mockito.any(HttpHeaders.class))).thenReturn(currentObject);
+        ResultActions response = mockMvc.perform(put("/mc/approve")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(apprDTO))
+                .header("X-TENANT-ID", "MAHESHBANK")
+                .header("content-type", "application/json"));
+
+        String expectedJson = objectMapper.writeValueAsString(currentObject);
+        System.out.println(response.toString());
+        response.andExpect(MockMvcResultMatchers.status().is(200))
+                .andExpect(MockMvcResultMatchers.content().json(expectedJson));
+    }
+
+    @Test
+    void approve_throwsException() throws Exception
     {
         currentObject.setStatus(Status.APPROVED);
         when(objServ.approveObject(Mockito.any(approveDTO.class), Mockito.any(HttpHeaders.class))).thenReturn(currentObject);

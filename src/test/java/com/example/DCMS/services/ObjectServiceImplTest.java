@@ -2,9 +2,10 @@ package com.example.DCMS.services;
 
 import com.example.DCMS.DTOs.*;
 import com.example.DCMS.enums.Status;
+import com.example.DCMS.exception.AlreadyExistsException;
+import com.example.DCMS.exception.ResourceNotFoundException;
 import com.example.DCMS.models.dataObject;
 import com.example.DCMS.repositories.dataObjectRepo;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.assertj.core.api.Assertions;
@@ -16,17 +17,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.http.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 
+import java.time.LocalDate;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 
@@ -113,31 +114,50 @@ class ObjectServiceImplTest {
                 ArgumentMatchers.any(),
                 ArgumentMatchers.<Class<String>>any()))
                 .thenReturn(responseEntity);
-        dataObject res = objserv.approveObject(apprDTO, headers);
+        Object res = objserv.approveObject(apprDTO, headers);
         currentObject.setStatus(Status.APPROVED);
         System.out.println(res);
         Assertions.assertThat(res).isEqualTo(currentObject);
     }
+
 
     @Test
     void approveObject_wrongMethod()
     {
-        given(dor.save(Mockito.any(dataObject.class))).willAnswer((invocation -> invocation.getArgument(0)));
         when(dor.findById("764673BIN")).thenReturn(Optional.ofNullable(currentObject));
         apprDTO.setMethod("JKJDSA");
-        ResponseEntity<String> responseEntity = new ResponseEntity<>("done", HttpStatus.OK);
 
-        when(restTemplate.exchange(
-                ArgumentMatchers.anyString(),
-                ArgumentMatchers.any(HttpMethod.class),
-                ArgumentMatchers.any(),
-                ArgumentMatchers.<Class<String>>any()))
-                .thenReturn(responseEntity);
-        dataObject res = objserv.approveObject(apprDTO, headers);
-        currentObject.setStatus(Status.APPROVED);
-        System.out.println(res);
-        Assertions.assertThat(res).isEqualTo(currentObject);
+        // Define the expected exception
+        IllegalArgumentException thrownException = assertThrows(IllegalArgumentException.class, () -> {
+            // Call the method that should throw the exception
+            objserv.approveObject(apprDTO, headers);
+        });
     }
+
+    @Test
+    void approveObject_dataObjectNotFound()
+    {
+        when(dor.findById("764673BIN")).thenReturn(Optional.empty());
+        // Define the expected exception
+        ResourceNotFoundException thrownException = assertThrows(ResourceNotFoundException.class, () -> {
+            // Call the method that should throw the exception
+            objserv.approveObject(apprDTO, headers);
+        });
+    }
+
+    @Test
+    void approveObject_alreadyExistsException()
+    {
+        when(dor.findById("764673BIN")).thenReturn(Optional.ofNullable(currentObject));
+        currentObject.setStatus(Status.APPROVED);
+        // Define the expected exception
+        AlreadyExistsException thrownException = assertThrows(AlreadyExistsException.class, () -> {
+            // Call the method that should throw the exception
+            objserv.approveObject(apprDTO, headers);
+        });
+    }
+
+
     @Test
     void approveObject_throwsBadRequest()
     {
@@ -191,11 +211,31 @@ class ObjectServiceImplTest {
     }
 
     @Test
+    void rejectObject_alreadyExistsException()
+    {
+        when(dor.findById("764673BIN")).thenReturn(Optional.ofNullable(currentObject));
+        currentObject.setStatus(Status.REJECTED);
+        AlreadyExistsException thrownException = assertThrows(AlreadyExistsException.class, () -> {
+            objserv.rejectObject(rejDTO);
+        });
+    }
+
+    @Test
     void addObject()
     {
         given(dor.save(Mockito.any(dataObject.class))).willAnswer((invocation -> invocation.getArgument(0)));
         when(dor.findById(Mockito.anyString())).thenReturn(Optional.empty());
         dataObject savedObject = objserv.addObject(doDTO);
         Assertions.assertThat(savedObject).isEqualTo(currentObject);
+    }
+
+
+    @Test
+    void addObject_alreadyExistsException()
+    {
+        when(dor.findById(Mockito.anyString())).thenReturn(Optional.ofNullable(currentObject));
+        AlreadyExistsException thrownException = assertThrows(AlreadyExistsException.class, () -> {
+            objserv.addObject(doDTO);
+        });
     }
 }

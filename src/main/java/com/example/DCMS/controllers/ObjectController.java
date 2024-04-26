@@ -7,7 +7,6 @@ import com.example.DCMS.enums.Status;
 import com.example.DCMS.models.dataObject;
 import com.example.DCMS.repositories.dataObjectRepo;
 import com.example.DCMS.services.ObjectServiceImpl;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Logger;
@@ -26,16 +26,12 @@ public class ObjectController {
     @Autowired
     private ObjectServiceImpl objectService;
 
+
     @Autowired
     private dataObjectRepo dor;
 
     private static final Logger LOGGER = Logger.getLogger("ObjectController.class");
 
-    @GetMapping(path = "/test")
-    public ResponseEntity<String> helloWorld() {
-        LOGGER.info("test");
-        return new ResponseEntity<>("Hello world", HttpStatus.OK);
-    }
 
     @PutMapping(path = "/approve")
     public ResponseEntity<dataObject> approve(@RequestBody approveDTO req, HttpServletRequest servletRequest) {
@@ -50,6 +46,7 @@ public class ObjectController {
             headers.add(headerName, headerValue);
         }
         dataObject returnedObject =  objectService.approveObject(req, headers);
+
         if(returnedObject.getStatus() == Status.REJECTED)
             return new ResponseEntity<>(returnedObject, HttpStatus.BAD_REQUEST);
         return  new ResponseEntity<>(returnedObject, HttpStatus.OK);
