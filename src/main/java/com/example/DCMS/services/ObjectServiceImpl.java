@@ -16,10 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import jakarta.servlet.http.HttpServletRequest;
 
-import java.util.Enumeration;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -32,19 +29,27 @@ public class ObjectServiceImpl implements ObjectService {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    RestTemplate restTemplate;
+
     private static final Logger LOGGER = Logger.getLogger("ObjectController.class");
 
 
+
+
     @Override
-    public ResponseEntity<String> approveObject(approveDTO req, HttpServletRequest servletRequest) {
+    public dataObject approveObject(approveDTO req, HttpHeaders headers) {
         LOGGER.info("Executing 'approve' by checker");
         String id = req.getId();
         String url = req.getUrl();
         String methodType = req.getMethod();
-        Optional<dataObject> co = Optional.ofNullable(dor.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Object cannot be found.")));
+        Optional<dataObject> co = dor.findById(id);
+        dataObject currentObject;
+        if(co.isPresent())
+            currentObject = co.get();
+        else
+            throw new ResourceNotFoundException("Object cannot be found.");
 
-        dataObject currentObject = co.get();
         if (currentObject.getStatus() != Status.PENDING)
             throw new AlreadyExistsException("Object Already checked");
 
@@ -52,23 +57,11 @@ public class ObjectServiceImpl implements ObjectService {
         dataObject savedObject = currentObject;
 
         Object payload = savedObject.getData();
-        HttpHeaders headers = new HttpHeaders();
 
-        Enumeration<String> headerNames = servletRequest.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String headerName = headerNames.nextElement();
-            if (!("content-type".equalsIgnoreCase(headerName) || "X-TENANT-ID".equalsIgnoreCase(headerName))) {
-                continue;
-            }
-            String headerValue = servletRequest.getHeader(headerName);
-            headers.add(headerName, headerValue);
-        }
         HttpMethod httpMethod = switch (methodType.toUpperCase()) {
             case "POST" -> HttpMethod.POST;
-            case "GET" -> HttpMethod.GET;
             case "PUT" -> HttpMethod.PUT;
             default ->
-                // Handle invalid method type
                     throw new IllegalArgumentException("Invalid HTTP method type: " + methodType);
         };
 
@@ -76,10 +69,10 @@ public class ObjectServiceImpl implements ObjectService {
         try {
             stringPayload = objectMapper.writeValueAsString(payload);
         } catch (JsonProcessingException e) {
-            e.printStackTrace(); // Handle exception appropriately
+            e.printStackTrace();
         }
         HttpEntity<String> requestEntity = new HttpEntity<>(stringPayload, headers);
-        RestTemplate restTemplate = new RestTemplate();
+
         try {
             ResponseEntity<String> responseEntity = restTemplate.exchange(
                     url,
@@ -96,9 +89,9 @@ public class ObjectServiceImpl implements ObjectService {
                 savedObject.setStatus(Status.APPROVED);
             }
             savedObject.validateBeforeSave();
-            dor.save(savedObject);
+            dataObject returnedObject =dor.save(savedObject);
             LOGGER.info("Executed 'approve' by checker");
-            return responseEntity;
+            return returnedObject;
 
         } catch (HttpClientErrorException e) {
             // Handle the case where the response status code is 400
@@ -109,14 +102,14 @@ public class ObjectServiceImpl implements ObjectService {
                 savedObject.setStatus(Status.APPROVED);
             }
             savedObject.validateBeforeSave();
-            dor.save(savedObject);
+            dataObject returnedObject = dor.save(savedObject);
             LOGGER.info("Error occurred while executing 'approve' by checker");
-            return new ResponseEntity<>(e.getResponseBodyAsString(), e.getStatusCode());
+            return returnedObject;
         }
     }
 
     @Override
-    public ResponseEntity<dataObject> rejectObject(rejectDTO req) {
+    public dataObject rejectObject(rejectDTO req) {
         LOGGER.info("Executing 'reject' by checker");
         String id = req.getId();
         String rejectReason = req.getRejectReason();
@@ -130,11 +123,11 @@ public class ObjectServiceImpl implements ObjectService {
         currentObject.validateBeforeSave();
         dataObject savedObject = dor.save(currentObject);
         LOGGER.info("Executed 'reject' by checker");
-        return new ResponseEntity<>(savedObject, HttpStatus.OK);
+        return savedObject;
     }
 
     @Override
-    public ResponseEntity<dataObject> addObject(dataObjectDTO req) {
+    public dataObject addObject(dataObjectDTO req) {
         LOGGER.info("Executing 'add' by maker");
         req.setObjectType(req.getObjectType().toUpperCase());
         req.setId(req.getUniqueName() + req.getObjectType());
@@ -155,6 +148,6 @@ public class ObjectServiceImpl implements ObjectService {
         currentObject.validateBeforeSave();
         dataObject savedObject = dor.save(currentObject);
         LOGGER.info("Executed 'add' by maker");
-        return new ResponseEntity<>(savedObject, HttpStatus.CREATED);
+        return savedObject;
     }
 }

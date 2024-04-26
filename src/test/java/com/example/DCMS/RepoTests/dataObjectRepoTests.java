@@ -25,19 +25,13 @@ public class dataObjectRepoTests
     @BeforeEach
     public void init()
     {
-        Map<String, String> mp = new HashMap<>();
-        mp.put("cookies", "abc");
-        Date dt = new Date();
+
         currentObject = dataObject.builder()
-                .method("get")
-                .uri("/api/abc")
-                .requestHeaders(mp)
                 .userEmail("abc@gmail.com")
                 .username("abc")
                 .data("data")
-                .createdDate(dt)
-                .status("PENDING")
                 .objectType("BIN")
+                .uniqueName("38271398721")
                 .build();
     }
 
