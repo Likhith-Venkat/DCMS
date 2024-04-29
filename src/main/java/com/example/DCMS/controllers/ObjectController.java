@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Logger;
@@ -28,7 +27,7 @@ public class ObjectController {
 
 
     @Autowired
-    private dataObjectRepo dor;
+    private dataObjectRepo  dor;
 
     private static final Logger LOGGER = Logger.getLogger("ObjectController.class");
 

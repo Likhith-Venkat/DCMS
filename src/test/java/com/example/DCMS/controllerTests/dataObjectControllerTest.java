@@ -124,9 +124,9 @@ class dataObjectControllerTest
     }
 
     @Test
-    void approve_throwsException() throws Exception
+    void approve_ReturnsRejectedObject() throws Exception
     {
-        currentObject.setStatus(Status.APPROVED);
+        currentObject.setStatus(Status.REJECTED);
         when(objServ.approveObject(Mockito.any(approveDTO.class), Mockito.any(HttpHeaders.class))).thenReturn(currentObject);
         ResultActions response = mockMvc.perform(put("/mc/approve")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -136,7 +136,7 @@ class dataObjectControllerTest
 
         String expectedJson = objectMapper.writeValueAsString(currentObject);
         System.out.println(response.toString());
-        response.andExpect(MockMvcResultMatchers.status().is(200))
+        response.andExpect(MockMvcResultMatchers.status().is(400))
                 .andExpect(MockMvcResultMatchers.content().json(expectedJson));
     }
 
