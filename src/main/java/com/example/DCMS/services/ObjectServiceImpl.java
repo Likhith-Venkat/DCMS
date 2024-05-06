@@ -97,14 +97,14 @@ public class ObjectServiceImpl implements ObjectService {
             }
             savedObject.validateBeforeSave();
             DataObject returnedObject = dor.save(savedObject);
-            LOGGER.info("Error occurred while executing 'approve' by checker");
+            log.info("Error occurred while executing 'approve' by checker");
             return returnedObject;
         }
     }
 
     @Override
     public DataObject rejectObject(RejectDTO req) {
-        LOGGER.info("Executing 'reject' by checker");
+        log.info("Executing 'reject' by checker");
         String id = req.getId();
         String rejectReason = req.getRejectReason();
         Optional<DataObject> co = Optional.of(dor.findById(id)
