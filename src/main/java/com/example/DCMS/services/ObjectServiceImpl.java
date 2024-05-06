@@ -11,6 +11,7 @@ import com.example.DCMS.models.dataObject;
 import com.example.DCMS.repositories.dataObjectRepo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Optional;
 import java.util.logging.Logger;
 
+@Slf4j
 @Service
 public class ObjectServiceImpl implements ObjectService {
 
@@ -32,14 +34,10 @@ public class ObjectServiceImpl implements ObjectService {
 
     RestTemplate restTemplate = new RestTemplate();
 
-    private static final Logger LOGGER = Logger.getLogger("ObjectController.class");
-
-
-
 
     @Override
     public dataObject approveObject(approveDTO req, HttpHeaders headers) {
-        LOGGER.info("Executing 'approve' by checker");
+        log.info("Executing 'approve' by checker");
         String id = req.getId();
         String url = req.getUrl();
         String methodType = req.getMethod();
@@ -88,7 +86,7 @@ public class ObjectServiceImpl implements ObjectService {
             }
             savedObject.validateBeforeSave();
             dataObject returnedObject =dor.save(savedObject);
-            LOGGER.info("Executed 'approve' by checker");
+            log.info("Executed 'approve' by checker");
             return returnedObject;
 
         } catch (HttpClientErrorException e) {
@@ -99,14 +97,14 @@ public class ObjectServiceImpl implements ObjectService {
             }
             savedObject.validateBeforeSave();
             dataObject returnedObject = dor.save(savedObject);
-            LOGGER.info("Error occurred while executing 'approve' by checker");
+            log.info("Error occurred while executing 'approve' by checker");
             return returnedObject;
         }
     }
 
     @Override
     public dataObject rejectObject(rejectDTO req) {
-        LOGGER.info("Executing 'reject' by checker");
+        log.info("Executing 'reject' by checker");
         String id = req.getId();
         String rejectReason = req.getRejectReason();
         Optional<dataObject> co = Optional.of(dor.findById(id)
@@ -118,13 +116,13 @@ public class ObjectServiceImpl implements ObjectService {
         currentObject.setRejectReason(rejectReason);
         currentObject.validateBeforeSave();
         dataObject savedObject = dor.save(currentObject);
-        LOGGER.info("Executed 'reject' by checker");
+        log.info("Executed 'reject' by checker");
         return savedObject;
     }
 
     @Override
     public dataObject addObject(dataObjectDTO req) {
-        LOGGER.info("Executing 'add' by maker");
+        log.info("Executing 'add' by maker");
         req.setObjectType(req.getObjectType().toUpperCase());
         req.setId(req.getUniqueName() + req.getObjectType());
         dataObject currentObject = dataObject.builder()
@@ -143,7 +141,7 @@ public class ObjectServiceImpl implements ObjectService {
         }
         currentObject.validateBeforeSave();
         dataObject savedObject = dor.save(currentObject);
-        LOGGER.info("Executed 'add' by maker");
+        log.info("Executed 'add' by maker");
         return savedObject;
     }
 }
