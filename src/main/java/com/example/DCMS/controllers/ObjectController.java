@@ -30,10 +30,7 @@ public class ObjectController {
 
 
     @Autowired
-    private DataObjectRepo  dor;
-
-
-
+    private DataObjectRepo  dataObjectRepo;
 
     @PutMapping(path = "/approve")
     public ResponseEntity<DataObject> approve(@RequestBody ApproveDTO req, HttpServletRequest servletRequest) {
@@ -48,17 +45,17 @@ public class ObjectController {
             String headerValue = servletRequest.getHeader(headerName);
             headers.add(headerName, headerValue);
         }
-        DataObject returnedObject =  objectService.approveObject(req, headers);
+        DataObject approvedObject =  objectService.approveObject(req, headers);
 
-        if(returnedObject.getStatus() == Status.REJECTED)
-            return new ResponseEntity<>(returnedObject, HttpStatus.BAD_REQUEST);
-        return  new ResponseEntity<>(returnedObject, HttpStatus.OK);
+        if(approvedObject.getStatus() == Status.REJECTED)
+            return new ResponseEntity<>(approvedObject, HttpStatus.BAD_REQUEST);
+        return  new ResponseEntity<>(approvedObject, HttpStatus.OK);
     }
 
     @PutMapping(path = "/rejectobj")
     public ResponseEntity<DataObject> rejectobj(@RequestBody RejectDTO req) {
-        DataObject savedObject = objectService.rejectObject(req);
-        return new ResponseEntity<>(savedObject, HttpStatus.OK);
+        DataObject rejectedObject = objectService.rejectObject(req);
+        return new ResponseEntity<>(rejectedObject, HttpStatus.OK);
     }
 
     @PostMapping(path = "/addobj")
@@ -70,7 +67,7 @@ public class ObjectController {
     @GetMapping(path = "/get/{status}/{objectType}")
     public ResponseEntity<List<DataObject>> get(@PathVariable Status status, @PathVariable ObjectType objectType) {
         log.info("Executing 'get'");
-        List<DataObject> dolist = dor.findByStatusAndObjectType(status, objectType);
+        List<DataObject> dolist = dataObjectRepo.findByStatusAndObjectType(status, objectType);
         log .info("Executed 'get'");
         return new ResponseEntity<>(dolist, HttpStatus.OK);
     }

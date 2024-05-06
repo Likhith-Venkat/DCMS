@@ -5,6 +5,7 @@ import com.example.DCMS.DTOs.ApproveDTO;
 import com.example.DCMS.DTOs.DataObjectDTO;
 import com.example.DCMS.DTOs.RejectDTO;
 import com.example.DCMS.controllers.ObjectController;
+import com.example.DCMS.enums.Method;
 import com.example.DCMS.enums.ObjectType;
 import com.example.DCMS.services.ObjectServiceImpl;
 import com.example.DCMS.enums.Status;
@@ -41,7 +42,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 class DataObjectControllerTest
 {
     @MockBean
-    private DataObjectRepo dor;
+    private DataObjectRepo dataObjectRepo;
     @MockBean 
     private ObjectServiceImpl objServ;
     private DataObject currentObject;
@@ -74,7 +75,7 @@ class DataObjectControllerTest
                 .uniqueName("764673")
                 .build();
         doDTO = DataObjectDTO.builder()
-                .userEmail("abc@gmail.com")
+                .useremail("abc@gmail.com")
                 .username("abc")
                 .data(dt)
                 .objectType("BIN")
@@ -86,7 +87,7 @@ class DataObjectControllerTest
                 .build();
         apprDTO = ApproveDTO.builder()
                 .url("https://uat-dcms.m2pfintech.com/dcms-authnt/api/bins")
-                .method("POST")
+                .method(Method.POST)
                 .id("764673BIN")
                 .build();
     }
@@ -97,7 +98,7 @@ class DataObjectControllerTest
     void  get_retursList() throws Exception {
         List<DataObject> currentList = new ArrayList<>();
         currentList.add(currentObject);
-        when(dor.findByStatusAndObjectType(Status.PENDING, ObjectType.BIN)).thenReturn(currentList);
+        when(dataObjectRepo.findByStatusAndObjectType(Status.PENDING, ObjectType.BIN)).thenReturn(currentList);
         ResultActions response = mockMvc.perform(get("/mc/get/PENDING/BIN")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(currentObject)));
@@ -176,6 +177,6 @@ class DataObjectControllerTest
     @AfterEach
     public void exit()
     {
-        dor.deleteAll();
+        dataObjectRepo.deleteAll();
     }
 }

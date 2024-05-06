@@ -20,35 +20,35 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorMessage> resourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
-        ErrorMessage message = new ErrorMessage(
+        ErrorMessage errorMessage = new ErrorMessage(
                 HttpStatus.NOT_FOUND.value(),
                 new Date(),
                 ex.getMessage(),
                 request.getDescription(false));
         log.warn(ex.getMessage());
-        return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(AlreadyExistsException.class)
     public ResponseEntity<ErrorMessage> alreadyExistsException(AlreadyExistsException ex, WebRequest request) {
-        ErrorMessage message = new ErrorMessage(
+        ErrorMessage errorMessage = new ErrorMessage(
                 HttpStatus.NOT_ACCEPTABLE.value(),
                 new Date(),
                 ex.getMessage(),
                 request.getDescription(false));
         log.warn(ex.getMessage());
-        return new ResponseEntity<>(message, HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>(errorMessage, HttpStatus.NOT_ACCEPTABLE);
     }
 
     @ExceptionHandler(DocumentValidationException.class)
     public ResponseEntity<ErrorMessage> documentValidationExceptionHandler(DocumentValidationException ex, WebRequest request) {
-        ErrorMessage message = new ErrorMessage(
+        ErrorMessage errorMessage = new ErrorMessage(
                 HttpStatus.NOT_ACCEPTABLE.value(),
                 new Date(),
                 ex.getMessage(),
                 request.getDescription(false));
         log.warn(ex.getMessage());
-        return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -63,12 +63,12 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorMessage> globalExceptionHandler(Exception ex, WebRequest request) {
-        ErrorMessage message = new ErrorMessage(
+        ErrorMessage errorMessage = new ErrorMessage(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 new Date(),
                 ex.getMessage(),
                 request.getDescription(false));
         log.warn(ex.getMessage());
-        return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
