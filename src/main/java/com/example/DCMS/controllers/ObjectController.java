@@ -3,9 +3,11 @@ package com.example.DCMS.controllers;
 import com.example.DCMS.DTOs.approveDTO;
 import com.example.DCMS.DTOs.dataObjectDTO;
 import com.example.DCMS.DTOs.rejectDTO;
+import com.example.DCMS.enums.ObjectType;
 import com.example.DCMS.enums.Status;
 import com.example.DCMS.models.dataObject;
 import com.example.DCMS.repositories.dataObjectRepo;
+import com.example.DCMS.services.ObjectService;
 import com.example.DCMS.services.ObjectServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +66,7 @@ public class ObjectController {
     }
 
     @GetMapping(path = "/get/{status}/{objectType}")
-    public ResponseEntity<List<dataObject>> get(@PathVariable String status, @PathVariable String objectType) {
+    public ResponseEntity<List<dataObject>> get(@PathVariable Status status, @PathVariable ObjectType objectType) {
         LOGGER.info("Executing 'get'");
         List<dataObject> dolist = dor.findByStatusAndObjectType(status, objectType);
         LOGGER.info("Executed 'get'");
