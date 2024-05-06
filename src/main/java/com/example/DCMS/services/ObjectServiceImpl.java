@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 
@@ -99,6 +100,10 @@ public class ObjectServiceImpl implements ObjectService {
             DataObject returnedObject = dor.save(savedObject);
             log.info("Error occurred while executing 'approve' by checker");
             return returnedObject;
+        }
+        catch (HttpServerErrorException e) {
+            log.error("HTTP Server Error: {}", e.getRawStatusCode());
+            throw e;
         }
     }
 
