@@ -4,6 +4,6 @@ import org.springframework.data.mongodb.config.EnableMongoAuditing;
 
 @Configuration
 @EnableMongoAuditing
-public class dataConfig {
+public class DataConfig {
     // Additional configurations if needed
 }
