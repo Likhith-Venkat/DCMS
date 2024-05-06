@@ -33,16 +33,4 @@ public class dataObject {
     private String objectType;
     private String rejectReason;
     private String uniqueName;
-    public void validateBeforeSave() {
-        Map<String, String> mp = new HashMap<>();
-        if(data == null)
-            mp.put("data", "data cannot be null");
-        if(objectType == null)
-            mp.put("objectType", "objectType cannot be null");
-        if(uniqueName == null)
-            mp.put("uniqueName", "uniqueName cannot be null");
-        if (data == null||objectType == null|| uniqueName == null) {
-            throw new documentValidationException(mp);
-        }
-    }
 }

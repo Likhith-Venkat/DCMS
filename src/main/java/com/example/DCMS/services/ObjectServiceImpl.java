@@ -3,6 +3,7 @@ package com.example.DCMS.services;
 import com.example.DCMS.DTOs.approveDTO;
 import com.example.DCMS.DTOs.dataObjectDTO;
 import com.example.DCMS.DTOs.rejectDTO;
+import com.example.DCMS.enums.Method;
 import com.example.DCMS.enums.Status;
 import com.example.DCMS.exception.AlreadyExistsException;
 import com.example.DCMS.exception.ResourceNotFoundException;
@@ -10,6 +11,7 @@ import com.example.DCMS.models.dataObject;
 import com.example.DCMS.repositories.dataObjectRepo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -41,7 +43,7 @@ public class ObjectServiceImpl implements ObjectService {
         LOGGER.info("Executing 'approve' by checker");
         String id = req.getId();
         String url = req.getUrl();
-        String methodType = req.getMethod();
+        Method methodType = req.getMethod();
         Optional<dataObject> co = dor.findById(id);
         dataObject currentObject;
         if(co.isPresent())
@@ -57,9 +59,9 @@ public class ObjectServiceImpl implements ObjectService {
 
         Object payload = savedObject.getData();
 
-        HttpMethod httpMethod = switch (methodType.toUpperCase()) {
-            case "POST" -> HttpMethod.POST;
-            case "PUT" -> HttpMethod.PUT;
+        HttpMethod httpMethod = switch (methodType) {
+            case POST -> HttpMethod.POST;
+            case PUT -> HttpMethod.PUT;
             default ->
                     throw new IllegalArgumentException("Invalid HTTP method type: " + methodType);
         };
@@ -85,7 +87,6 @@ public class ObjectServiceImpl implements ObjectService {
             if (responseEntity.getStatusCode() != HttpStatus.BAD_REQUEST) {
                 savedObject.setStatus(Status.APPROVED);
             }
-            savedObject.validateBeforeSave();
             dataObject returnedObject =dor.save(savedObject);
             LOGGER.info("Executed 'approve' by checker");
             return returnedObject;
@@ -96,7 +97,6 @@ public class ObjectServiceImpl implements ObjectService {
                 savedObject.setStatus(Status.REJECTED);
                 savedObject.setRejectReason(e.getResponseBodyAsString());
             }
-            savedObject.validateBeforeSave();
             dataObject returnedObject = dor.save(savedObject);
             LOGGER.info("Error occurred while executing 'approve' by checker");
             return returnedObject;
@@ -115,7 +115,6 @@ public class ObjectServiceImpl implements ObjectService {
             throw new AlreadyExistsException("Object Already checked");
         currentObject.setStatus(Status.REJECTED);
         currentObject.setRejectReason(rejectReason);
-        currentObject.validateBeforeSave();
         dataObject savedObject = dor.save(currentObject);
         LOGGER.info("Executed 'reject' by checker");
         return savedObject;
@@ -126,7 +125,8 @@ public class ObjectServiceImpl implements ObjectService {
         LOGGER.info("Executing 'add' by maker");
         req.setObjectType(req.getObjectType().toUpperCase());
         req.setId(req.getUniqueName() + req.getObjectType());
-        dataObject currentObject = dataObject.builder()
+        dataObject currentObject;
+        currentObject = dataObject.builder()
                 .data(req.getData())
                 .username(req.getUsername())
                 .userEmail(req.getUserEmail())
@@ -140,7 +140,6 @@ public class ObjectServiceImpl implements ObjectService {
         if (chk.isPresent()) {
             throw new AlreadyExistsException("Object Already exists");
         }
-        currentObject.validateBeforeSave();
         dataObject savedObject = dor.save(currentObject);
         LOGGER.info("Executed 'add' by maker");
         return savedObject;

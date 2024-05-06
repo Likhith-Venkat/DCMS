@@ -1,6 +1,8 @@
 package com.example.DCMS.DTOs;
 
 
+import com.example.DCMS.enums.Method;
+import com.mongodb.lang.NonNull;
 import lombok.*;
 
 @NoArgsConstructor
@@ -11,7 +13,7 @@ import lombok.*;
 public class approveDTO
 {
     String url;
-    String method;
+    Method method;
     String id;
 
 }

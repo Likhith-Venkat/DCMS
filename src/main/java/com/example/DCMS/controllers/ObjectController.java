@@ -8,10 +8,12 @@ import com.example.DCMS.models.dataObject;
 import com.example.DCMS.repositories.dataObjectRepo;
 import com.example.DCMS.services.ObjectServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Enumeration;
@@ -58,7 +60,7 @@ public class ObjectController {
     }
 
     @PostMapping(path = "/addobj")
-    public ResponseEntity<dataObject> addobj(@RequestBody dataObjectDTO req) {
+    public ResponseEntity<dataObject> addobj(@RequestBody @Valid dataObjectDTO req) {
         dataObject savedObject = objectService.addObject(req);
         return new ResponseEntity<>(savedObject, HttpStatus.CREATED);
     }
