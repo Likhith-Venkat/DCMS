@@ -1,7 +1,6 @@
 package com.example.DCMS.models;
 
 import com.example.DCMS.enums.ObjectType;
-import com.example.DCMS.exception.DocumentValidationException;
 import lombok.*;
 
 import com.example.DCMS.enums.Status;
@@ -10,8 +9,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 @Data
 @Setter

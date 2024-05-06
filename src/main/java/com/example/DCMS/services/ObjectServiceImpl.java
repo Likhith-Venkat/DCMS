@@ -12,7 +12,6 @@ import com.example.DCMS.models.DataObject;
 import com.example.DCMS.repositories.DataObjectRepo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -23,14 +22,13 @@ import org.springframework.web.client.RestTemplate;
 
 
 import java.util.Optional;
-import java.util.logging.Logger;
 
 @Slf4j
 @Service
 public class ObjectServiceImpl implements ObjectService {
 
     @Autowired
-    private DataObjectRepo dor;
+    private DataObjectRepo dataObjectRepo;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -43,12 +41,12 @@ public class ObjectServiceImpl implements ObjectService {
         log.info("Executing 'approve' by checker");
         String id = req.getId();
         String url = req.getUrl();
-        Method methodType = req.getMethod();
-        Optional<DataObject> co = dor.findById(id);
+        Method method = req.getMethod();
+        Optional<DataObject> dataObjectForID = dataObjectRepo.findById(id);
         DataObject currentObject;
 
-        if(co.isPresent())
-            currentObject = co.get();
+        if(dataObjectForID.isPresent())
+            currentObject = dataObjectForID.get();
         else
             throw new ResourceNotFoundException("Object cannot be found.");
 
@@ -60,11 +58,11 @@ public class ObjectServiceImpl implements ObjectService {
 
         Object payload = savedObject.getData();
 
-        HttpMethod httpMethod = switch (methodType) {
+        HttpMethod httpMethod = switch (method) {
             case POST -> HttpMethod.POST;
             case PUT -> HttpMethod.PUT;
             default ->
-                    throw new IllegalArgumentException("Invalid HTTP method type: " + methodType);
+                    throw new IllegalArgumentException("Invalid HTTP method type: " + method);
         };
 
         String stringPayload = null;
@@ -89,7 +87,7 @@ public class ObjectServiceImpl implements ObjectService {
                 savedObject.setStatus(Status.APPROVED);
             }
 
-            DataObject returnedObject =dor.save(savedObject);
+            DataObject returnedObject =dataObjectRepo.save(savedObject);
             log.info("Executed 'approve' by checker");
             return returnedObject;
 
@@ -100,7 +98,7 @@ public class ObjectServiceImpl implements ObjectService {
                 savedObject.setRejectReason(e.getResponseBodyAsString());
             }
 
-            DataObject returnedObject = dor.save(savedObject);
+            DataObject returnedObject = dataObjectRepo.save(savedObject);
             log.info("Error occurred while executing 'approve' by checker");
             return returnedObject;
         }
@@ -115,15 +113,15 @@ public class ObjectServiceImpl implements ObjectService {
         log.info("Executing 'reject' by checker");
         String id = req.getId();
         String rejectReason = req.getRejectReason();
-        Optional<DataObject> co = Optional.of(dor.findById(id)
+        Optional<DataObject> dataObjectForID = Optional.of(dataObjectRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Object Not Found")));
-        DataObject currentObject = co.get();
+        DataObject currentObject = dataObjectForID.get();
         if (currentObject.getStatus() != Status.PENDING)
             throw new AlreadyExistsException("Object Already checked");
         currentObject.setStatus(Status.REJECTED);
         currentObject.setRejectReason(rejectReason);
 
-        DataObject savedObject = dor.save(currentObject);
+        DataObject savedObject = dataObjectRepo.save(currentObject);
         log.info("Executed 'reject' by checker");
         return savedObject;
     }
@@ -137,19 +135,19 @@ public class ObjectServiceImpl implements ObjectService {
         DataObject currentObject = DataObject.builder()
                 .data(req.getData())
                 .username(req.getUsername())
-                .userEmail(req.getUserEmail())
+                .userEmail(req.getUseremail())
                 .objectType(ObjectType.valueOf(req.getObjectType()))
                 .status(Status.PENDING)
                 .id(req.getId())
                 .createdDate(req.getCreatedDate())
                 .uniqueName(req.getUniqueName())
                 .build();
-        Optional<DataObject> chk = dor.findById(req.getId());
-        if (chk.isPresent()) {
+        Optional<DataObject> dataObjectForID = dataObjectRepo.findById(req.getId());
+        if (dataObjectForID.isPresent()) {
             throw new AlreadyExistsException("Object Already exists");
         }
 
-        DataObject savedObject = dor.save(currentObject);
+        DataObject savedObject = dataObjectRepo.save(currentObject);
         log.info("Executed 'add' by maker");
         return savedObject;
     }
