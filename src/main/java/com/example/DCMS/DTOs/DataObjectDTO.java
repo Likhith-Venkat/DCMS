@@ -11,7 +11,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class dataObjectDTO {
+public class DataObjectDTO {
     private String id;
     private String userEmail;
     private String username;

@@ -1,12 +1,12 @@
 package com.example.DCMS.controllers;
 
-import com.example.DCMS.DTOs.approveDTO;
-import com.example.DCMS.DTOs.dataObjectDTO;
-import com.example.DCMS.DTOs.rejectDTO;
+import com.example.DCMS.DTOs.ApproveDTO;
+import com.example.DCMS.DTOs.DataObjectDTO;
+import com.example.DCMS.DTOs.RejectDTO;
 import com.example.DCMS.enums.ObjectType;
 import com.example.DCMS.enums.Status;
-import com.example.DCMS.models.dataObject;
-import com.example.DCMS.repositories.dataObjectRepo;
+import com.example.DCMS.models.DataObject;
+import com.example.DCMS.repositories.DataObjectRepo;
 import com.example.DCMS.services.ObjectService;
 import com.example.DCMS.services.ObjectServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Enumeration;
@@ -29,13 +30,14 @@ public class ObjectController {
 
 
     @Autowired
-    private dataObjectRepo  dor;
+    private DataObjectRepo  dor;
 
     private static final Logger LOGGER = Logger.getLogger("ObjectController.class");
 
 
     @PutMapping(path = "/approve")
-    public ResponseEntity<dataObject> approve(@RequestBody approveDTO req, HttpServletRequest servletRequest) {
+    public ResponseEntity<DataObject> approve(@RequestBody ApproveDTO req, HttpServletRequest servletRequest) {
+
         HttpHeaders headers = new HttpHeaders();
         Enumeration<String> headerNames = servletRequest.getHeaderNames();
         while (headerNames.hasMoreElements()) {
@@ -46,7 +48,7 @@ public class ObjectController {
             String headerValue = servletRequest.getHeader(headerName);
             headers.add(headerName, headerValue);
         }
-        dataObject returnedObject =  objectService.approveObject(req, headers);
+        DataObject returnedObject =  objectService.approveObject(req, headers);
 
         if(returnedObject.getStatus() == Status.REJECTED)
             return new ResponseEntity<>(returnedObject, HttpStatus.BAD_REQUEST);
@@ -54,21 +56,21 @@ public class ObjectController {
     }
 
     @PutMapping(path = "/rejectobj")
-    public ResponseEntity<dataObject> rejectobj(@RequestBody rejectDTO req) {
-        dataObject savedObject = objectService.rejectObject(req);
+    public ResponseEntity<DataObject> rejectobj(@RequestBody RejectDTO req) {
+        DataObject savedObject = objectService.rejectObject(req);
         return new ResponseEntity<>(savedObject, HttpStatus.OK);
     }
 
     @PostMapping(path = "/addobj")
-    public ResponseEntity<dataObject> addobj(@RequestBody dataObjectDTO req) {
-        dataObject savedObject = objectService.addObject(req);
+    public ResponseEntity<DataObject> addobj(@RequestBody DataObjectDTO req) {
+        DataObject savedObject = objectService.addObject(req);
         return new ResponseEntity<>(savedObject, HttpStatus.CREATED);
     }
 
     @GetMapping(path = "/get/{status}/{objectType}")
-    public ResponseEntity<List<dataObject>> get(@PathVariable Status status, @PathVariable ObjectType objectType) {
+    public ResponseEntity<List<DataObject>> get(@PathVariable Status status, @PathVariable ObjectType objectType) {
         LOGGER.info("Executing 'get'");
-        List<dataObject> dolist = dor.findByStatusAndObjectType(status, objectType);
+        List<DataObject> dolist = dor.findByStatusAndObjectType(status, objectType);
         LOGGER.info("Executed 'get'");
         return new ResponseEntity<>(dolist, HttpStatus.OK);
     }

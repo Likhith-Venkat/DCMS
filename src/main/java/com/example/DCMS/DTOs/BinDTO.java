@@ -6,7 +6,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class binDTO {
+public class BinDTO {
     private String binValue;
     private boolean checkSIExternal;
     private String billingCurrency;

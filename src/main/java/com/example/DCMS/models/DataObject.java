@@ -1,7 +1,7 @@
 package com.example.DCMS.models;
 
 import com.example.DCMS.enums.ObjectType;
-import com.example.DCMS.exception.documentValidationException;
+import com.example.DCMS.exception.DocumentValidationException;
 import lombok.*;
 
 import com.example.DCMS.enums.Status;
@@ -23,7 +23,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Builder
 @Document(collection = "maker_checker_requests")
-public class dataObject {
+public class DataObject {
     @Id
     private String id;
     private String userEmail;
@@ -43,7 +43,7 @@ public class dataObject {
         if(uniqueName == null)
             mp.put("uniqueName", "uniqueName cannot be null");
         if (data == null||objectType == null|| uniqueName == null) {
-            throw new documentValidationException(mp);
+            throw new DocumentValidationException(mp);
         }
     }
 }

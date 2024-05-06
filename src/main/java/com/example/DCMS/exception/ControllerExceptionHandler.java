@@ -35,8 +35,8 @@ public class ControllerExceptionHandler {
         return new ResponseEntity<>(message, HttpStatus.NOT_ACCEPTABLE);
     }
 
-    @ExceptionHandler(documentValidationException.class)
-    public ResponseEntity<ErrorMessage> documentValidationExceptionHandler(documentValidationException ex, WebRequest request) {
+    @ExceptionHandler(DocumentValidationException.class)
+    public ResponseEntity<ErrorMessage> documentValidationExceptionHandler(DocumentValidationException ex, WebRequest request) {
         ErrorMessage message = new ErrorMessage(
                 HttpStatus.NOT_ACCEPTABLE.value(),
                 new Date(),

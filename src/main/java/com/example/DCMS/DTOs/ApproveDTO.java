@@ -1,14 +1,16 @@
 package com.example.DCMS.DTOs;
 
+
 import lombok.*;
 
-@AllArgsConstructor
 @NoArgsConstructor
-@Getter
+@AllArgsConstructor
 @Setter
+@Getter
 @Builder
-public class rejectDTO
+public class ApproveDTO
 {
+    String url;
+    String method;
     String id;
-    String rejectReason;
 }

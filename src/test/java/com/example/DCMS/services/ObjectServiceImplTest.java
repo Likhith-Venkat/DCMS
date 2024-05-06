@@ -5,8 +5,8 @@ import com.example.DCMS.enums.ObjectType;
 import com.example.DCMS.enums.Status;
 import com.example.DCMS.exception.AlreadyExistsException;
 import com.example.DCMS.exception.ResourceNotFoundException;
-import com.example.DCMS.models.dataObject;
-import com.example.DCMS.repositories.dataObjectRepo;
+import com.example.DCMS.models.DataObject;
+import com.example.DCMS.repositories.DataObjectRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.assertj.core.api.Assertions;
@@ -37,20 +37,20 @@ import static org.mockito.Mockito.when;
 class ObjectServiceImplTest {
 
     @Mock
-    private dataObjectRepo dor;
+    private DataObjectRepo dor;
     @Mock
     private ObjectMapper objectMapper;
     @Mock
     private RestTemplate restTemplate;
-    private dataObject currentObject;
-    private dataObjectDTO doDTO;
-    private rejectDTO rejDTO;
-    private approveDTO apprDTO;
+    private DataObject currentObject;
+    private DataObjectDTO doDTO;
+    private RejectDTO rejDTO;
+    private ApproveDTO apprDTO;
 
 
 
 
-    private binDTO dt;
+    private BinDTO dt;
     HttpHeaders headers = new HttpHeaders();
     @InjectMocks
     ObjectServiceImpl objserv;
@@ -59,21 +59,21 @@ class ObjectServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        dt = binDTO.builder()
+        dt = BinDTO.builder()
                 .binValue("764673")
                 .checkSIExternal(false)
                 .billingCurrency("356")
                 .status(true)
                 .binType("DEBIT")
                 .build();
-        doDTO = dataObjectDTO.builder()
+        doDTO = DataObjectDTO.builder()
                 .userEmail("abc@gmail.com")
                 .username("abc")
                 .data(dt)
                 .objectType("BIN")
                 .uniqueName("764673")
                 .build();
-        currentObject = dataObject.builder()
+        currentObject = DataObject.builder()
                 .id("764673BIN")
                 .userEmail("abc@gmail.com")
                 .username("abc")
@@ -82,11 +82,11 @@ class ObjectServiceImplTest {
                 .objectType(ObjectType.BIN)
                 .uniqueName("764673")
                 .build();
-        rejDTO = rejectDTO.builder()
+        rejDTO = RejectDTO.builder()
                 .rejectReason("Bad credentials")
                 .id("764673BIN")
                 .build();
-        apprDTO = approveDTO.builder()
+        apprDTO = ApproveDTO.builder()
                 .url("https://uat-dcms.m2pfintech.com/dcms-authnt/api/bins")
                 .method("POST")
                 .id("764673BIN")
@@ -104,7 +104,7 @@ class ObjectServiceImplTest {
     @Test
     void approveObject_returnsOK()
     {
-        given(dor.save(Mockito.any(dataObject.class))).willAnswer((invocation -> invocation.getArgument(0)));
+        given(dor.save(Mockito.any(DataObject.class))).willAnswer((invocation -> invocation.getArgument(0)));
         when(dor.findById("764673BIN")).thenReturn(Optional.ofNullable(currentObject));
 
         ResponseEntity<String> responseEntity = new ResponseEntity<>("done", HttpStatus.OK);
@@ -136,7 +136,7 @@ class ObjectServiceImplTest {
     }
 
     @Test
-    void approveObject_dataObjectNotFound()
+    void approveObject_DataObjectNotFound()
     {
         when(dor.findById("764673BIN")).thenReturn(Optional.empty());
         // Define the expected exception
@@ -162,7 +162,7 @@ class ObjectServiceImplTest {
     @Test
     void approveObject_throwsBadRequest()
     {
-        given(dor.save(Mockito.any(dataObject.class))).willAnswer((invocation -> invocation.getArgument(0)));
+        given(dor.save(Mockito.any(DataObject.class))).willAnswer((invocation -> invocation.getArgument(0)));
         when(dor.findById("764673BIN")).thenReturn(Optional.ofNullable(currentObject));
 
         HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad Req, Wrong Bin");
@@ -173,7 +173,7 @@ class ObjectServiceImplTest {
                 ArgumentMatchers.any(),
                 ArgumentMatchers.<Class<String>>any()))
                 .thenThrow(exception);
-        dataObject res = objserv.approveObject(apprDTO, headers);
+        DataObject res = objserv.approveObject(apprDTO, headers);
         currentObject.setStatus(Status.REJECTED);
         currentObject.setRejectReason("Bad Req, Wrong Bin");
         System.out.println(res);
@@ -182,7 +182,7 @@ class ObjectServiceImplTest {
     @Test
     void approveObject_returnsBadRequest()
     {
-        given(dor.save(Mockito.any(dataObject.class))).willAnswer((invocation -> invocation.getArgument(0)));
+        given(dor.save(Mockito.any(DataObject.class))).willAnswer((invocation -> invocation.getArgument(0)));
         when(dor.findById("764673BIN")).thenReturn(Optional.ofNullable(currentObject));
 
         ResponseEntity<String> responseEntity = new ResponseEntity<>("Bad Req, Wrong Bin", HttpStatus.BAD_REQUEST);
@@ -193,7 +193,7 @@ class ObjectServiceImplTest {
                 ArgumentMatchers.any(),
                 ArgumentMatchers.<Class<String>>any()))
                 .thenReturn(responseEntity);
-        dataObject res = objserv.approveObject(apprDTO, headers);
+        DataObject res = objserv.approveObject(apprDTO, headers);
         currentObject.setStatus(Status.REJECTED);
         currentObject.setRejectReason("Bad Req, Wrong Bin");
         System.out.println(res);
@@ -203,9 +203,9 @@ class ObjectServiceImplTest {
     @Test
     void rejectObject()
     {
-        given(dor.save(Mockito.any(dataObject.class))).willAnswer((invocation -> invocation.getArgument(0)));
+        given(dor.save(Mockito.any(DataObject.class))).willAnswer((invocation -> invocation.getArgument(0)));
         when(dor.findById("764673BIN")).thenReturn(Optional.ofNullable(currentObject));
-        dataObject savedObject = objserv.rejectObject(rejDTO);
+        DataObject savedObject = objserv.rejectObject(rejDTO);
         currentObject.setStatus(Status.REJECTED);
         currentObject.setRejectReason(rejDTO.getRejectReason());
         Assertions.assertThat(savedObject).isEqualTo(currentObject);
@@ -224,9 +224,9 @@ class ObjectServiceImplTest {
     @Test
     void addObject()
     {
-        given(dor.save(Mockito.any(dataObject.class))).willAnswer((invocation -> invocation.getArgument(0)));
+        given(dor.save(Mockito.any(DataObject.class))).willAnswer((invocation -> invocation.getArgument(0)));
         when(dor.findById(Mockito.anyString())).thenReturn(Optional.empty());
-        dataObject savedObject = objserv.addObject(doDTO);
+        DataObject savedObject = objserv.addObject(doDTO);
         Assertions.assertThat(savedObject).isEqualTo(currentObject);
     }
 
