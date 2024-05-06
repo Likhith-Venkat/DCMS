@@ -1,5 +1,6 @@
 package com.example.DCMS.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -9,10 +10,11 @@ import org.springframework.web.context.request.WebRequest;
 import java.util.Date;
 import java.util.logging.Logger;
 
+@Slf4j
 @ControllerAdvice
 public class ControllerExceptionHandler {
 
-    private static final Logger LOGGER = Logger.getLogger("ControllerExceptionHandler.class");
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorMessage> resourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
         ErrorMessage message = new ErrorMessage(
@@ -20,7 +22,7 @@ public class ControllerExceptionHandler {
                 new Date(),
                 ex.getMessage(),
                 request.getDescription(false));
-        LOGGER.warning(ex.getMessage());
+        log.warn(ex.getMessage());
         return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
     }
 
@@ -31,7 +33,7 @@ public class ControllerExceptionHandler {
                 new Date(),
                 ex.getMessage(),
                 request.getDescription(false));
-        LOGGER.warning(ex.getMessage());
+        log.warn(ex.getMessage());
         return new ResponseEntity<>(message, HttpStatus.NOT_ACCEPTABLE);
     }
 
@@ -42,7 +44,7 @@ public class ControllerExceptionHandler {
                 new Date(),
                 ex.getMessage(),
                 request.getDescription(false));
-        LOGGER.warning(ex.getMessage());
+        log.warn(ex.getMessage());
         return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -53,7 +55,7 @@ public class ControllerExceptionHandler {
                 new Date(),
                 ex.getMessage(),
                 request.getDescription(false));
-        LOGGER.warning(ex.getMessage());
+        log.warn(ex.getMessage());
         return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

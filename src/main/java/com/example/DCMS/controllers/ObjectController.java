@@ -10,6 +10,7 @@ import com.example.DCMS.repositories.DataObjectRepo;
 import com.example.DCMS.services.ObjectService;
 import com.example.DCMS.services.ObjectServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Logger;
-
+@Slf4j
 @RestController
 @RequestMapping("/mc")
 public class ObjectController {
@@ -32,7 +33,7 @@ public class ObjectController {
     @Autowired
     private DataObjectRepo  dor;
 
-    private static final Logger LOGGER = Logger.getLogger("ObjectController.class");
+
 
 
     @PutMapping(path = "/approve")
@@ -68,10 +69,17 @@ public class ObjectController {
     }
 
     @GetMapping(path = "/get/{status}/{objectType}")
+<<<<<<< HEAD
     public ResponseEntity<List<DataObject>> get(@PathVariable Status status, @PathVariable ObjectType objectType) {
         LOGGER.info("Executing 'get'");
         List<DataObject> dolist = dor.findByStatusAndObjectType(status, objectType);
         LOGGER.info("Executed 'get'");
+=======
+    public ResponseEntity<List<dataObject>> get(@PathVariable Status status, @PathVariable ObjectType objectType) {
+        log.info("Executing 'get'");
+        List<dataObject> dolist = dor.findByStatusAndObjectType(status, objectType);
+        log  .info("Executed 'get'");
+>>>>>>> 3e8dd26fcef0edef8f2748fc549dd04d8f6554a0
         return new ResponseEntity<>(dolist, HttpStatus.OK);
     }
 }
