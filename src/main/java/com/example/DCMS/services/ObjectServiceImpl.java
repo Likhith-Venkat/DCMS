@@ -4,7 +4,6 @@ import com.example.DCMS.DTOs.ApproveDTO;
 import com.example.DCMS.DTOs.DataObjectDTO;
 import com.example.DCMS.DTOs.RejectDTO;
 import com.example.DCMS.enums.Method;
-import com.example.DCMS.enums.ObjectType;
 import com.example.DCMS.enums.Status;
 import com.example.DCMS.exception.AlreadyExistsException;
 import com.example.DCMS.exception.ResourceNotFoundException;
@@ -12,8 +11,8 @@ import com.example.DCMS.models.DataObject;
 import com.example.DCMS.repositories.DataObjectRepo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,6 @@ import org.springframework.web.client.RestTemplate;
 
 
 import java.util.Optional;
-import java.util.logging.Logger;
 
 @Slf4j
 @Service
@@ -34,6 +32,9 @@ public class ObjectServiceImpl implements ObjectService {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private ModelMapper mapper;
 
     RestTemplate restTemplate = new RestTemplate();
 
@@ -48,6 +49,7 @@ public class ObjectServiceImpl implements ObjectService {
         DataObject currentObject;
 
         if(co.isPresent())
+
             currentObject = co.get();
         else
             throw new ResourceNotFoundException("Object cannot be found.");
@@ -131,19 +133,9 @@ public class ObjectServiceImpl implements ObjectService {
     @Override
     public DataObject addObject(DataObjectDTO req) {
         log.info("Executing 'add' by maker");
-        req.setObjectType(req.getObjectType().toUpperCase());
         req.setId(req.getUniqueName() + req.getObjectType());
 
-        DataObject currentObject = DataObject.builder()
-                .data(req.getData())
-                .username(req.getUsername())
-                .userEmail(req.getUserEmail())
-                .objectType(ObjectType.valueOf(req.getObjectType()))
-                .status(Status.PENDING)
-                .id(req.getId())
-                .createdDate(req.getCreatedDate())
-                .uniqueName(req.getUniqueName())
-                .build();
+        DataObject currentObject = mapper.map(req, DataObject.class);
         Optional<DataObject> chk = dor.findById(req.getId());
         if (chk.isPresent()) {
             throw new AlreadyExistsException("Object Already exists");

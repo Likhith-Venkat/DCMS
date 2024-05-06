@@ -1,6 +1,7 @@
 package com.example.DCMS.DTOs;
 
 
+import com.example.DCMS.enums.ObjectType;
 import com.example.DCMS.enums.Status;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -24,7 +25,7 @@ public class DataObjectDTO {
     private Date createdDate;
     private Status status;
     @NotNull(message = "objectType cannot be null")
-    private String objectType;
+    private ObjectType objectType;
     private String rejectReason;
     @NotNull(message = "uniqueName cannot be null")
     private String uniqueName;
