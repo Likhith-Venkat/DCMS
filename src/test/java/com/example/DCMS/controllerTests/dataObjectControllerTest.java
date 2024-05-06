@@ -97,7 +97,7 @@ class dataObjectControllerTest
     void  get_retursList() throws Exception {
         List<dataObject> currentList = new ArrayList<>();
         currentList.add(currentObject);
-        when(dor.findByStatusAndObjectType("PENDING", "BIN")).thenReturn(currentList);
+        when(dor.findByStatusAndObjectType(Status.PENDING, ObjectType.BIN)).thenReturn(currentList);
         ResultActions response = mockMvc.perform(get("/mc/get/PENDING/BIN")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(currentObject)));

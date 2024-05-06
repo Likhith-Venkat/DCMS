@@ -1,6 +1,8 @@
 package com.example.DCMS.RepoTests;
 
 
+import com.example.DCMS.enums.ObjectType;
+import com.example.DCMS.enums.Status;
 import com.example.DCMS.models.dataObject;
 import com.example.DCMS.repositories.dataObjectRepo;
 import org.assertj.core.api.Assertions;
@@ -30,7 +32,7 @@ public class dataObjectRepoTests
                 .userEmail("abc@gmail.com")
                 .username("abc")
                 .data("data")
-                .objectType("BIN")
+                .objectType(ObjectType.BIN)
                 .uniqueName("38271398721")
                 .build();
     }
@@ -59,7 +61,7 @@ public class dataObjectRepoTests
     public void findByStatusAndObjectType_ReturnsDataObjectList() {
         //Act
         dataObject savedObject = dor.save(currentObject);
-        List<dataObject> returnedObject = dor.findByStatusAndObjectType("PENDING", "BIN");
+        List<dataObject> returnedObject = dor.findByStatusAndObjectType(Status.PENDING, ObjectType.BIN);
         //Assert
         Assertions.assertThat(returnedObject).isNotNull();
         Assertions.assertThat(returnedObject.size()).isEqualTo(1);

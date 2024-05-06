@@ -3,6 +3,7 @@ package com.example.DCMS.services;
 import com.example.DCMS.DTOs.approveDTO;
 import com.example.DCMS.DTOs.dataObjectDTO;
 import com.example.DCMS.DTOs.rejectDTO;
+import com.example.DCMS.enums.ObjectType;
 import com.example.DCMS.enums.Status;
 import com.example.DCMS.exception.AlreadyExistsException;
 import com.example.DCMS.exception.ResourceNotFoundException;
@@ -130,7 +131,7 @@ public class ObjectServiceImpl implements ObjectService {
                 .data(req.getData())
                 .username(req.getUsername())
                 .userEmail(req.getUserEmail())
-                .objectType(req.getObjectType())
+                .objectType(ObjectType.valueOf(req.getObjectType()))
                 .status(Status.PENDING)
                 .id(req.getId())
                 .createdDate(req.getCreatedDate())

@@ -1,6 +1,7 @@
 package com.example.DCMS.services;
 
 import com.example.DCMS.DTOs.*;
+import com.example.DCMS.enums.ObjectType;
 import com.example.DCMS.enums.Status;
 import com.example.DCMS.exception.AlreadyExistsException;
 import com.example.DCMS.exception.ResourceNotFoundException;
@@ -78,7 +79,7 @@ class ObjectServiceImplTest {
                 .username("abc")
                 .data(dt)
                 .status(Status.PENDING)
-                .objectType("BIN")
+                .objectType(ObjectType.BIN)
                 .uniqueName("764673")
                 .build();
         rejDTO = rejectDTO.builder()
