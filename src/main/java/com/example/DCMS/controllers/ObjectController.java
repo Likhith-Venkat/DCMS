@@ -69,17 +69,10 @@ public class ObjectController {
     }
 
     @GetMapping(path = "/get/{status}/{objectType}")
-<<<<<<< HEAD
     public ResponseEntity<List<DataObject>> get(@PathVariable Status status, @PathVariable ObjectType objectType) {
-        LOGGER.info("Executing 'get'");
-        List<DataObject> dolist = dor.findByStatusAndObjectType(status, objectType);
-        LOGGER.info("Executed 'get'");
-=======
-    public ResponseEntity<List<dataObject>> get(@PathVariable Status status, @PathVariable ObjectType objectType) {
         log.info("Executing 'get'");
-        List<dataObject> dolist = dor.findByStatusAndObjectType(status, objectType);
-        log  .info("Executed 'get'");
->>>>>>> 3e8dd26fcef0edef8f2748fc549dd04d8f6554a0
+        List<DataObject> dolist = dor.findByStatusAndObjectType(status, objectType);
+        log .info("Executed 'get'");
         return new ResponseEntity<>(dolist, HttpStatus.OK);
     }
 }
