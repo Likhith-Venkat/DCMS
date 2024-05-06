@@ -1,5 +1,6 @@
 package com.example.DCMS.models;
 
+import com.example.DCMS.enums.ObjectType;
 import com.example.DCMS.exception.documentValidationException;
 import lombok.*;
 
@@ -30,7 +31,7 @@ public class dataObject {
     private Object data;
     private Date createdDate;
     private Status status;
-    private String objectType;
+    private ObjectType objectType;
     private String rejectReason;
     private String uniqueName;
     public void validateBeforeSave() {

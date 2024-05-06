@@ -5,6 +5,7 @@ import com.example.DCMS.DTOs.approveDTO;
 import com.example.DCMS.DTOs.dataObjectDTO;
 import com.example.DCMS.DTOs.rejectDTO;
 import com.example.DCMS.controllers.ObjectController;
+import com.example.DCMS.enums.ObjectType;
 import com.example.DCMS.services.ObjectServiceImpl;
 import com.example.DCMS.enums.Status;
 import com.example.DCMS.models.dataObject;
@@ -41,7 +42,7 @@ class dataObjectControllerTest
 {
     @MockBean
     private dataObjectRepo dor;
-    @MockBean
+    @MockBean 
     private ObjectServiceImpl objServ;
     private dataObject currentObject;
 
@@ -69,7 +70,7 @@ class dataObjectControllerTest
                 .username("abc")
                 .data(dt)
                 .status(Status.PENDING)
-                .objectType("BIN")
+                .objectType(ObjectType.BIN)
                 .uniqueName("764673")
                 .build();
         doDTO = dataObjectDTO.builder()
