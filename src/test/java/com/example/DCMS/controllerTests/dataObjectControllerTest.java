@@ -1,15 +1,16 @@
 package com.example.DCMS.controllerTests;
 
 
-import com.example.DCMS.DTOs.approveDTO;
-import com.example.DCMS.DTOs.dataObjectDTO;
-import com.example.DCMS.DTOs.rejectDTO;
+import com.example.DCMS.DTOs.ApproveDTO;
+import com.example.DCMS.DTOs.DataObjectDTO;
+import com.example.DCMS.DTOs.RejectDTO;
 import com.example.DCMS.controllers.ObjectController;
+import com.example.DCMS.enums.ObjectType;
 import com.example.DCMS.services.ObjectServiceImpl;
 import com.example.DCMS.enums.Status;
-import com.example.DCMS.models.dataObject;
-import com.example.DCMS.repositories.dataObjectRepo;
-import com.example.DCMS.DTOs.binDTO;
+import com.example.DCMS.models.DataObject;
+import com.example.DCMS.repositories.DataObjectRepo;
+import com.example.DCMS.DTOs.BinDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,53 +38,53 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 @AutoConfigureDataMongo
 @ExtendWith(MockitoExtension.class)
-class dataObjectControllerTest
+class DataObjectControllerTest
 {
     @MockBean
-    private dataObjectRepo dor;
-    @MockBean
+    private DataObjectRepo dor;
+    @MockBean 
     private ObjectServiceImpl objServ;
-    private dataObject currentObject;
+    private DataObject currentObject;
 
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
 
-    private dataObjectDTO doDTO;
-    private approveDTO apprDTO;
-    private rejectDTO rejDTO;
+    private DataObjectDTO doDTO;
+    private ApproveDTO apprDTO;
+    private RejectDTO rejDTO;
     @BeforeEach
     public void init()
     {
-        binDTO dt = binDTO.builder()
+        BinDTO dt = BinDTO.builder()
                 .binValue("764673")
                 .checkSIExternal(false)
                 .billingCurrency("356")
                 .status(true)
                 .binType("DEBIT")
                 .build();
-        currentObject = dataObject.builder()
+        currentObject = DataObject.builder()
                 .id("764673BIN")
                 .userEmail("abc@gmail.com")
                 .username("abc")
                 .data(dt)
                 .status(Status.PENDING)
-                .objectType("BIN")
+                .objectType(ObjectType.BIN)
                 .uniqueName("764673")
                 .build();
-        doDTO = dataObjectDTO.builder()
+        doDTO = DataObjectDTO.builder()
                 .userEmail("abc@gmail.com")
                 .username("abc")
                 .data(dt)
                 .objectType("BIN")
                 .uniqueName("764673")
                 .build();
-        rejDTO = rejectDTO.builder()
+        rejDTO = RejectDTO.builder()
                 .rejectReason("Bad credentials")
                 .id("764673BIN")
                 .build();
-        apprDTO = approveDTO.builder()
+        apprDTO = ApproveDTO.builder()
                 .url("https://uat-dcms.m2pfintech.com/dcms-authnt/api/bins")
                 .method("POST")
                 .id("764673BIN")
@@ -94,9 +95,9 @@ class dataObjectControllerTest
 
     @Test
     void  get_retursList() throws Exception {
-        List<dataObject> currentList = new ArrayList<>();
+        List<DataObject> currentList = new ArrayList<>();
         currentList.add(currentObject);
-        when(dor.findByStatusAndObjectType("PENDING", "BIN")).thenReturn(currentList);
+        when(dor.findByStatusAndObjectType(Status.PENDING, ObjectType.BIN)).thenReturn(currentList);
         ResultActions response = mockMvc.perform(get("/mc/get/PENDING/BIN")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(currentObject)));
@@ -110,7 +111,7 @@ class dataObjectControllerTest
     void approve() throws Exception
     {
         currentObject.setStatus(Status.APPROVED);
-        when(objServ.approveObject(Mockito.any(approveDTO.class), Mockito.any(HttpHeaders.class))).thenReturn(currentObject);
+        when(objServ.approveObject(Mockito.any(ApproveDTO.class), Mockito.any(HttpHeaders.class))).thenReturn(currentObject);
         ResultActions response = mockMvc.perform(put("/mc/approve")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(apprDTO))
@@ -127,7 +128,7 @@ class dataObjectControllerTest
     void approve_ReturnsRejectedObject() throws Exception
     {
         currentObject.setStatus(Status.REJECTED);
-        when(objServ.approveObject(Mockito.any(approveDTO.class), Mockito.any(HttpHeaders.class))).thenReturn(currentObject);
+        when(objServ.approveObject(Mockito.any(ApproveDTO.class), Mockito.any(HttpHeaders.class))).thenReturn(currentObject);
         ResultActions response = mockMvc.perform(put("/mc/approve")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(apprDTO))
@@ -142,7 +143,7 @@ class dataObjectControllerTest
 
     @Test
     void  addobj() throws Exception {
-        when(objServ.addObject(Mockito.any(dataObjectDTO.class))).thenReturn(currentObject);
+        when(objServ.addObject(Mockito.any(DataObjectDTO.class))).thenReturn(currentObject);
 
         ResultActions response = mockMvc.perform(post("/mc/addobj")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -158,7 +159,7 @@ class dataObjectControllerTest
 
         currentObject.setStatus(Status.REJECTED);
         currentObject.setRejectReason(rejDTO.getRejectReason());
-        when(objServ.rejectObject(Mockito.any(rejectDTO.class))).thenReturn(currentObject);
+        when(objServ.rejectObject(Mockito.any(RejectDTO.class))).thenReturn(currentObject);
 
         ResultActions response = mockMvc.perform(put("/mc/rejectobj")
                 .contentType(MediaType.APPLICATION_JSON)

@@ -1,8 +1,10 @@
 package com.example.DCMS.RepoTests;
 
 
-import com.example.DCMS.models.dataObject;
-import com.example.DCMS.repositories.dataObjectRepo;
+import com.example.DCMS.enums.ObjectType;
+import com.example.DCMS.enums.Status;
+import com.example.DCMS.models.DataObject;
+import com.example.DCMS.repositories.DataObjectRepo;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,21 +18,21 @@ import java.util.List;
 import java.util.Map;
 
 @DataMongoTest
-public class dataObjectRepoTests
+public class DataObjectRepoTests
 {
     @Autowired
-    private dataObjectRepo dor;
-    private dataObject currentObject;
+    private DataObjectRepo dor;
+    private DataObject currentObject;
 
     @BeforeEach
     public void init()
     {
 
-        currentObject = dataObject.builder()
+        currentObject = DataObject.builder()
                 .userEmail("abc@gmail.com")
                 .username("abc")
                 .data("data")
-                .objectType("BIN")
+                .objectType(ObjectType.BIN)
                 .uniqueName("38271398721")
                 .build();
     }
@@ -38,7 +40,7 @@ public class dataObjectRepoTests
     @Test
     public void save_ReturnsDataObject() {
         //Act
-        dataObject savedObject = dor.save(currentObject);
+        DataObject savedObject = dor.save(currentObject);
 
         //Assert
         Assertions.assertThat(savedObject).isNotNull();
@@ -48,8 +50,8 @@ public class dataObjectRepoTests
     @Test
     public void findByID_ReturnsDataObject() {
         //Act
-        dataObject savedObject = dor.save(currentObject);
-        dataObject returnedObject = dor.findById(savedObject.getId()).get();
+        DataObject savedObject = dor.save(currentObject);
+        DataObject returnedObject = dor.findById(savedObject.getId()).get();
         //Assert
         Assertions.assertThat(returnedObject).isNotNull();
         Assertions.assertThat(returnedObject.getUsername()).isEqualTo(savedObject.getUsername());
@@ -58,8 +60,8 @@ public class dataObjectRepoTests
     @Test
     public void findByStatusAndObjectType_ReturnsDataObjectList() {
         //Act
-        dataObject savedObject = dor.save(currentObject);
-        List<dataObject> returnedObject = dor.findByStatusAndObjectType("PENDING", "BIN");
+        DataObject savedObject = dor.save(currentObject);
+        List<DataObject> returnedObject = dor.findByStatusAndObjectType(Status.PENDING, ObjectType.BIN);
         //Assert
         Assertions.assertThat(returnedObject).isNotNull();
         Assertions.assertThat(returnedObject.size()).isEqualTo(1);

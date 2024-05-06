@@ -4,9 +4,9 @@ This Spring Boot application provides endpoints for managing data objects with m
 
 ## Endpoints
 
-1. `/addobj`: Used by makers to add a data object. This endpoint accepts any object.
-2. `/rejectobj`: Used by checkers to reject data objects. It accepts a JSON payload with properties: `id` (object id) and `rejectReason`.
-3. `/approveobj`: Used by checkers to approve data objects. It accepts a JSON payload with property `id`.
+1. `/addobj`: Used by makers to add a data object . This endpoint accepts dataObjectDTO.
+2. `/rejectobj`: Used by checkers to reject data objects. It uses `id` (object id) and `rejectReason` to update DB.
+3. `/approveobj`: Used by checkers to approve data objects. It uses `id` `url` `method` to send request to DCMS backend and update the DB.
 4. `/get`: Used to fetch data based on `status` and `objectType`.
 
 ## Data Object Fields
@@ -14,13 +14,11 @@ This Spring Boot application provides endpoints for managing data objects with m
 Data objects have the following fields:
 
 - `Object data`: The main data of the object.
-- `String url`: The URL associated with the object.
-- `Map<String, String> headers`: Additional headers for the object.
+- `uniqueName`: Unique identifier for each data (Bin, product, bin range...).
 - `String objectType`: The type of the object.
 
 Other fields include:
 
-- `String method`: The HTTP method associated with the object.
 - `String Username`: The username associated with the object.
 - `String email`: The email associated with the object.
 - `String created Date`: The date when the object was created.
@@ -44,15 +42,9 @@ To run the application:
 
 To run the unit tests:
 
-1. Ensure you have a local MongoDB server running.
+1. Ensure you have a local MongoDB server running (for repository tests alone).
 2. Navigate to the project directory.
 3. Run `gradle test` to execute the unit tests.
-
-## Running docker image
-
-1. Install docker on your system.
-2. Run `docker pull siddarthan11m2p/dcmsmc:v1`.
-3. Once docker image is pulled run `docker run -it -p 8080:8080 siddarthan11m2p/dcmsmc:v1`.
 
 ## Additional Customizations
 

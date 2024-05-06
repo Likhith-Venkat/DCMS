@@ -10,10 +10,9 @@ import lombok.*;
 @Setter
 @Getter
 @Builder
-public class approveDTO
+public class ApproveDTO
 {
     String url;
     Method method;
     String id;
-
 }

@@ -14,8 +14,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class dataObjectDTO {
-
+public class DataObjectDTO {
     private String id;
     @Email(message = "Not a valid email id")
     private String userEmail;
