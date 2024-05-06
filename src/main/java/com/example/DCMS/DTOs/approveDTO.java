@@ -13,5 +13,4 @@ public class approveDTO
     String url;
     String method;
     String id;
-
 }

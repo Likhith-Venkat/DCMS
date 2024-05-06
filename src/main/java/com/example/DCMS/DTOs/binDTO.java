@@ -12,5 +12,4 @@ public class binDTO {
     private String billingCurrency;
     private boolean status;
     private String binType;
-
 }
