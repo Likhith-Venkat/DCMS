@@ -1,6 +1,7 @@
 package com.example.DCMS.services;
 
 import com.example.DCMS.DTOs.*;
+import com.example.DCMS.ObjectTranslation.ObjectServiceTranslation;
 import com.example.DCMS.enums.Method;
 import com.example.DCMS.enums.ObjectType;
 import com.example.DCMS.enums.Status;
@@ -23,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -43,8 +45,9 @@ class ObjectServiceImplTest {
     private DataObjectRepo dor;
     @Mock
     private ObjectMapper objectMapper;
+
     @Mock
-    private ModelMapper mapper;
+    private ModelMapper modelMapper;
     @Mock
     private RestTemplate restTemplate;
     private DataObject currentObject;
@@ -76,7 +79,7 @@ class ObjectServiceImplTest {
                 .username("abc")
                 .data(dt)
                 .objectType(ObjectType.BIN)
-                .uniqueName("764673BIN")
+                .uniqueName("764673")
                 .build();
         currentObject = DataObject.builder()
                 .id("764673BIN")
@@ -124,66 +127,66 @@ class ObjectServiceImplTest {
         Assertions.assertThat(res).isEqualTo(approveResponseDTO);
     }
 
-//
-//    @Test
-//    void approveObject_wrongMethod()
-//    {
-//        when(dor.findById("764673BIN")).thenReturn(Optional.ofNullable(currentObject));
-//        apprDTO.setMethod(Method.DELETE);
-//
-//        // Define the expected exception
-//        IllegalArgumentException thrownException = assertThrows(IllegalArgumentException.class, () -> {
-//            // Call the method that should throw the exception
-//            objserv.approveObject(apprDTO, headers);
-//        });
-//    }
-//
-//    @Test
-//    void approveObject_DataObjectNotFound()
-//    {
-//        when(dor.findById("764673BIN")).thenReturn(Optional.empty());
-//        // Define the expected exception
-//        ResourceNotFoundException thrownException = assertThrows(ResourceNotFoundException.class, () -> {
-//            // Call the method that should throw the exception
-//            objserv.approveObject(apprDTO, headers);
-//        });
-//    }
-//
-//    @Test
-//    void approveObject_alreadyExistsException()
-//    {
-//        when(dor.findById("764673BIN")).thenReturn(Optional.ofNullable(currentObject));
-//        currentObject.setStatus(Status.APPROVED);
-//        // Define the expected exception
-//        AlreadyExistsException thrownException = assertThrows(AlreadyExistsException.class, () -> {
-//            // Call the method that should throw the exception
-//            objserv.approveObject(apprDTO, headers);
-//        });
-//    }
-//
-//
+
     @Test
-    void approveObject_throwsBadRequest()
+    void approveObject_wrongMethod()
     {
-        given(dor.save(Mockito.any(DataObject.class))).willAnswer((invocation -> invocation.getArgument(0)));
         when(dor.findById("764673BIN")).thenReturn(Optional.ofNullable(currentObject));
+        apprDTO.setMethod(Method.DELETE);
 
-        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad Req, Wrong Bin");
-
-        when(restTemplate.exchange(
-                ArgumentMatchers.anyString(),
-                ArgumentMatchers.any(HttpMethod.class),
-                ArgumentMatchers.any(),
-                ArgumentMatchers.<Class<String>>any()))
-                .thenThrow(exception);
-        ApproveResponseDTO res = objserv.approveObject(apprDTO, headers);
-        currentObject.setStatus(Status.REJECTED);
-        currentObject.setRejectReason("Bad Req, Wrong Bin");
-        ApproveResponseDTO approveResponseDTO = new ApproveResponseDTO(HttpStatus.BAD_REQUEST, Status.REJECTED, currentObject.getRejectReason(), currentObject.getData(), currentObject);
-        System.out.println(res.getDataObject());
-        System.out.println(res.getRejectReason());
-        Assertions.assertThat(res).isEqualTo(approveResponseDTO);
+        // Define the expected exception
+        IllegalArgumentException thrownException = assertThrows(IllegalArgumentException.class, () -> {
+            // Call the method that should throw the exception
+            objserv.approveObject(apprDTO, headers);
+        });
     }
+
+    @Test
+    void approveObject_DataObjectNotFound()
+    {
+        when(dor.findById("764673BIN")).thenReturn(Optional.empty());
+        // Define the expected exception
+        ResourceNotFoundException thrownException = assertThrows(ResourceNotFoundException.class, () -> {
+            // Call the method that should throw the exception
+            objserv.approveObject(apprDTO, headers);
+        });
+    }
+
+    @Test
+    void approveObject_alreadyExistsException()
+    {
+        when(dor.findById("764673BIN")).thenReturn(Optional.ofNullable(currentObject));
+        currentObject.setStatus(Status.APPROVED);
+        // Define the expected exception
+        AlreadyExistsException thrownException = assertThrows(AlreadyExistsException.class, () -> {
+            // Call the method that should throw the exception
+            objserv.approveObject(apprDTO, headers);
+        });
+    }
+
+//
+//    @Test
+//    void approveObject_throwsBadRequest()
+//    {
+//        given(dor.save(Mockito.any(DataObject.class))).willAnswer((invocation -> invocation.getArgument(0)));
+//        when(dor.findById("764673BIN")).thenReturn(Optional.ofNullable(currentObject));
+//
+//        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad Req, Wrong Bin");
+//
+//        when(restTemplate.exchange(
+//                ArgumentMatchers.anyString(),
+//                ArgumentMatchers.any(HttpMethod.class),
+//                ArgumentMatchers.any(),
+//                ArgumentMatchers.<Class<String>>any()))
+//                .thenThrow(exception);
+//        ApproveResponseDTO res = objserv.approveObject(apprDTO, headers);
+//        currentObject.setStatus(Status.REJECTED);
+//        currentObject.setRejectReason("Bad Req, Wrong Bin");
+//        ApproveResponseDTO approveResponseDTO = new ApproveResponseDTO(HttpStatus.BAD_REQUEST, Status.REJECTED, currentObject.getRejectReason(), currentObject.getData(), currentObject);
+//        System.out.println(res.getDataObject());
+//        System.out.println(res.getRejectReason());
+//        Assertions.assertThat(res).isEqualTo(approveResponseDTO);
+//    }
 
 //    @Test
 //    void approveObject_returnsBadRequest()
@@ -205,7 +208,7 @@ class ObjectServiceImplTest {
 //        ApproveResponseDTO approveResponseDTO = new ApproveResponseDTO(HttpStatus.BAD_REQUEST, Status.REJECTED, "Bad Req, Wrong Bin", currentObject.getData(), currentObject);
 //        Assertions.assertThat(res).isEqualTo(approveResponseDTO);
 //    }
-
+//
     @Test
     void rejectObject()
     {
@@ -230,6 +233,8 @@ class ObjectServiceImplTest {
     @Test
     void addObject()
     {
+        when(modelMapper.map(Mockito.any(), Mockito.any()))
+                .thenReturn(currentObject);
         given(dor.save(Mockito.any(DataObject.class))).willAnswer((invocation -> invocation.getArgument(0)));
         when(dor.findById(Mockito.anyString())).thenReturn(Optional.empty());
         DataObject savedObject = objserv.addObject(doDTO);

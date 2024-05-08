@@ -1,6 +1,7 @@
 package com.example.DCMS.services;
 
 import com.example.DCMS.DTOs.ApproveDTO;
+import com.example.DCMS.ObjectTranslation.ObjectServiceTranslation;
 import com.example.DCMS.DTOs.ApproveResponseDTO;
 import com.example.DCMS.DTOs.DataObjectDTO;
 import com.example.DCMS.DTOs.RejectDTO;
@@ -35,7 +36,10 @@ public class ObjectServiceImpl implements ObjectService {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private ModelMapper mapper;
+    private ModelMapper modelMapper;
+
+    @Autowired
+    private ObjectServiceTranslation objectServiceTranslation;
 
     RestTemplate restTemplate = new RestTemplate();
 
@@ -135,7 +139,8 @@ public class ObjectServiceImpl implements ObjectService {
     public DataObject addObject(DataObjectDTO req) {
         log.info("Executing 'add' by maker");
         req.setId(req.getUniqueName() + req.getObjectType());
-        DataObject currentObject = mapper.map(req, DataObject.class);
+        req.setStatus(Status.PENDING);
+        DataObject currentObject = modelMapper.map(req, DataObject.class);
         Optional<DataObject> dataObjectForID = dataObjectRepo.findById(req.getId());
         if (dataObjectForID.isPresent()) {
             throw new AlreadyExistsException("Object Already exists");
