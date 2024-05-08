@@ -1,10 +1,10 @@
 package com.example.DCMS.services;
 
-import com.example.DCMS.DTOs.ApproveDTO;
-import com.example.DCMS.DTOs.ApproveResponseDTO;
-import com.example.DCMS.DTOs.DataObjectDTO;
-import com.example.DCMS.DTOs.RejectDTO;
-import com.example.DCMS.models.DataObject;
+import com.example.DCMS.DTO.ApproveDTO;
+import com.example.DCMS.DTO.ApproveResponseDTO;
+import com.example.DCMS.DTO.DataObjectDTO;
+import com.example.DCMS.DTO.RejectDTO;
+import com.example.DCMS.model.DataObject;
 import org.springframework.http.HttpHeaders;
 
 public interface ObjectService {

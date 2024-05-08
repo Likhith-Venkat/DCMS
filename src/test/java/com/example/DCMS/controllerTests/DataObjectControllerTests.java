@@ -1,14 +1,14 @@
 package com.example.DCMS.controllerTests;
 
 
-import com.example.DCMS.DTOs.*;
-import com.example.DCMS.controllers.ObjectController;
+import com.example.DCMS.DTO.*;
+import com.example.DCMS.controller.ObjectController;
 import com.example.DCMS.enums.Method;
 import com.example.DCMS.enums.ObjectType;
 import com.example.DCMS.services.ObjectServiceImpl;
 import com.example.DCMS.enums.Status;
-import com.example.DCMS.models.DataObject;
-import com.example.DCMS.repositories.DataObjectRepo;
+import com.example.DCMS.model.DataObject;
+import com.example.DCMS.repository.DataObjectRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

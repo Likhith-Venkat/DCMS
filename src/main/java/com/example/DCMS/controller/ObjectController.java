@@ -1,13 +1,13 @@
-package com.example.DCMS.controllers;
+package com.example.DCMS.controller;
 
-import com.example.DCMS.DTOs.ApproveDTO;
-import com.example.DCMS.DTOs.ApproveResponseDTO;
-import com.example.DCMS.DTOs.DataObjectDTO;
-import com.example.DCMS.DTOs.RejectDTO;
+import com.example.DCMS.DTO.ApproveDTO;
+import com.example.DCMS.DTO.ApproveResponseDTO;
+import com.example.DCMS.DTO.DataObjectDTO;
+import com.example.DCMS.DTO.RejectDTO;
 import com.example.DCMS.enums.ObjectType;
 import com.example.DCMS.enums.Status;
-import com.example.DCMS.models.DataObject;
-import com.example.DCMS.repositories.DataObjectRepo;
+import com.example.DCMS.model.DataObject;
+import com.example.DCMS.repository.DataObjectRepo;
 import com.example.DCMS.services.ObjectServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;

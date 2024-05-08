@@ -1,8 +1,7 @@
-package com.example.DCMS.DTOs;
+package com.example.DCMS.DTO;
 
 
 import com.example.DCMS.enums.Method;
-import com.mongodb.lang.NonNull;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;

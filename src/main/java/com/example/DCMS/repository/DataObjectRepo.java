@@ -1,7 +1,7 @@
-package com.example.DCMS.repositories;
+package com.example.DCMS.repository;
 
 import com.example.DCMS.enums.*;
-import com.example.DCMS.models.DataObject;
+import com.example.DCMS.model.DataObject;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;

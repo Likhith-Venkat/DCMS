@@ -1,4 +1,4 @@
-package com.example.DCMS.models;
+package com.example.DCMS.model;
 
 import com.example.DCMS.enums.ObjectType;
 import lombok.*;

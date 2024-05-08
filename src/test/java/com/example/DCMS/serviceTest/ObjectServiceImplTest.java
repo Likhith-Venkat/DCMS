@@ -1,17 +1,16 @@
-package com.example.DCMS.services;
+package com.example.DCMS.serviceTest;
 
-import com.example.DCMS.DTOs.*;
-import com.example.DCMS.ObjectTranslation.ObjectServiceTranslation;
+import com.example.DCMS.DTO.*;
 import com.example.DCMS.enums.Method;
 import com.example.DCMS.enums.ObjectType;
 import com.example.DCMS.enums.Status;
 import com.example.DCMS.exception.AlreadyExistsException;
 import com.example.DCMS.exception.ResourceNotFoundException;
-import com.example.DCMS.models.DataObject;
-import com.example.DCMS.repositories.DataObjectRepo;
+import com.example.DCMS.model.DataObject;
+import com.example.DCMS.repository.DataObjectRepo;
+import com.example.DCMS.services.ObjectServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.AfterEach;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,11 +21,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.*;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 

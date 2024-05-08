@@ -1,4 +1,4 @@
-package com.example.DCMS.DTOs;
+package com.example.DCMS.DTO;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

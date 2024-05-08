@@ -3,8 +3,8 @@ package com.example.DCMS.RepoTests;
 
 import com.example.DCMS.enums.ObjectType;
 import com.example.DCMS.enums.Status;
-import com.example.DCMS.models.DataObject;
-import com.example.DCMS.repositories.DataObjectRepo;
+import com.example.DCMS.model.DataObject;
+import com.example.DCMS.repository.DataObjectRepo;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

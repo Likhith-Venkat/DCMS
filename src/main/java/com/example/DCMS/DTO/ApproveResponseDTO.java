@@ -1,7 +1,7 @@
-package com.example.DCMS.DTOs;
+package com.example.DCMS.DTO;
 
 import com.example.DCMS.enums.Status;
-import com.example.DCMS.models.DataObject;
+import com.example.DCMS.model.DataObject;
 import lombok.*;
 import org.springframework.http.HttpStatus;
 

@@ -1,16 +1,16 @@
 package com.example.DCMS.services;
 
-import com.example.DCMS.DTOs.ApproveDTO;
+import com.example.DCMS.DTO.ApproveDTO;
 import com.example.DCMS.ObjectTranslation.ObjectServiceTranslation;
-import com.example.DCMS.DTOs.ApproveResponseDTO;
-import com.example.DCMS.DTOs.DataObjectDTO;
-import com.example.DCMS.DTOs.RejectDTO;
+import com.example.DCMS.DTO.ApproveResponseDTO;
+import com.example.DCMS.DTO.DataObjectDTO;
+import com.example.DCMS.DTO.RejectDTO;
 import com.example.DCMS.enums.Method;
 import com.example.DCMS.enums.Status;
 import com.example.DCMS.exception.AlreadyExistsException;
 import com.example.DCMS.exception.ResourceNotFoundException;
-import com.example.DCMS.models.DataObject;
-import com.example.DCMS.repositories.DataObjectRepo;
+import com.example.DCMS.model.DataObject;
+import com.example.DCMS.repository.DataObjectRepo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
