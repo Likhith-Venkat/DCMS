@@ -23,9 +23,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.http.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -161,28 +163,28 @@ class ObjectServiceImplTest {
     }
 
 //
-//    @Test
-//    void approveObject_throwsBadRequest()
-//    {
-//        given(dor.save(Mockito.any(DataObject.class))).willAnswer((invocation -> invocation.getArgument(0)));
-//        when(dor.findById("764673BIN")).thenReturn(Optional.ofNullable(currentObject));
-//
-//        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad Req, Wrong Bin");
-//
-//        when(restTemplate.exchange(
-//                ArgumentMatchers.anyString(),
-//                ArgumentMatchers.any(HttpMethod.class),
-//                ArgumentMatchers.any(),
-//                ArgumentMatchers.<Class<String>>any()))
-//                .thenThrow(exception);
-//        ApproveResponseDTO res = objserv.approveObject(apprDTO, headers);
-//        currentObject.setStatus(Status.REJECTED);
-//        currentObject.setRejectReason("Bad Req, Wrong Bin");
-//        ApproveResponseDTO approveResponseDTO = new ApproveResponseDTO(HttpStatus.BAD_REQUEST, Status.REJECTED, currentObject.getRejectReason(), currentObject.getData(), currentObject);
-//        System.out.println(res.getDataObject());
-//        System.out.println(res.getRejectReason());
-//        Assertions.assertThat(res).isEqualTo(approveResponseDTO);
-//    }
+    @Test
+    void approveObject_throwsBadRequest()
+    {
+        given(dor.save(Mockito.any(DataObject.class))).willAnswer((invocation -> invocation.getArgument(0)));
+        when(dor.findById("764673BIN")).thenReturn(Optional.ofNullable(currentObject));
+        String responseBody = "{\"error\": \"Bad req\"}";
+        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad Req, Wrong Bin", responseBody.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+
+        when(restTemplate.exchange(
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.any(HttpMethod.class),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.<Class<String>>any()))
+                .thenThrow(exception);
+        ApproveResponseDTO res = objserv.approveObject(apprDTO, headers);
+        currentObject.setStatus(Status.REJECTED);
+        currentObject.setRejectReason(responseBody);
+        ApproveResponseDTO approveResponseDTO = new ApproveResponseDTO(HttpStatus.BAD_REQUEST, Status.REJECTED, currentObject.getRejectReason(), currentObject.getData(), currentObject);
+        System.out.println(res.getDataObject());
+        System.out.println(res.getRejectReason());
+        Assertions.assertThat(res).isEqualTo(approveResponseDTO);
+    }
 
 //    @Test
 //    void approveObject_returnsBadRequest()

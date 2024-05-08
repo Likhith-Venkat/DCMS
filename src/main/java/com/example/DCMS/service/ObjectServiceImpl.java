@@ -102,7 +102,6 @@ public class ObjectServiceImpl implements ObjectService {
                 savedObject.setStatus(Status.REJECTED);
                 savedObject.setRejectReason(e.getResponseBodyAsString());
             }
-
             DataObject returnedObject = dataObjectRepo.save(savedObject);
             log.info("Error occurred while executing 'approve' by checker");
             return new ApproveResponseDTO(HttpStatus.BAD_REQUEST, returnedObject.getStatus(), returnedObject.getRejectReason(), returnedObject.getData(), returnedObject);
