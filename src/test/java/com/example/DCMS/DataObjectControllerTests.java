@@ -1,11 +1,11 @@
-package com.example.DCMS.controllerTests;
+package com.example.DCMS;
 
 
 import com.example.DCMS.DTO.*;
 import com.example.DCMS.controller.ObjectController;
 import com.example.DCMS.enums.Method;
 import com.example.DCMS.enums.ObjectType;
-import com.example.DCMS.services.ObjectServiceImpl;
+import com.example.DCMS.service.ObjectServiceImpl;
 import com.example.DCMS.enums.Status;
 import com.example.DCMS.model.DataObject;
 import com.example.DCMS.repository.DataObjectRepo;

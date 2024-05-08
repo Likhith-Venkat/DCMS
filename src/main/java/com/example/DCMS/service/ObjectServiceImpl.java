@@ -1,7 +1,6 @@
-package com.example.DCMS.services;
+package com.example.DCMS.service;
 
 import com.example.DCMS.DTO.ApproveDTO;
-import com.example.DCMS.ObjectTranslation.ObjectServiceTranslation;
 import com.example.DCMS.DTO.ApproveResponseDTO;
 import com.example.DCMS.DTO.DataObjectDTO;
 import com.example.DCMS.DTO.RejectDTO;
@@ -37,7 +36,6 @@ public class ObjectServiceImpl implements ObjectService {
 
     @Autowired
     private ModelMapper modelMapper;
-    private ObjectServiceTranslation objectServiceTranslation;
 
     RestTemplate restTemplate = new RestTemplate();
 

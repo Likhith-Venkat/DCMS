@@ -8,7 +8,7 @@ import com.example.DCMS.enums.ObjectType;
 import com.example.DCMS.enums.Status;
 import com.example.DCMS.model.DataObject;
 import com.example.DCMS.repository.DataObjectRepo;
-import com.example.DCMS.services.ObjectServiceImpl;
+import com.example.DCMS.service.ObjectServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package com.example.DCMS.services;
+package com.example.DCMS.service;
 
 import com.example.DCMS.DTO.ApproveDTO;
 import com.example.DCMS.DTO.ApproveResponseDTO;

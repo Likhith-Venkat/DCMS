@@ -1,4 +1,4 @@
-package com.example.DCMS.serviceTest;
+package com.example.DCMS;
 
 import com.example.DCMS.DTO.*;
 import com.example.DCMS.enums.Method;
@@ -8,7 +8,7 @@ import com.example.DCMS.exception.AlreadyExistsException;
 import com.example.DCMS.exception.ResourceNotFoundException;
 import com.example.DCMS.model.DataObject;
 import com.example.DCMS.repository.DataObjectRepo;
-import com.example.DCMS.services.ObjectServiceImpl;
+import com.example.DCMS.service.ObjectServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
