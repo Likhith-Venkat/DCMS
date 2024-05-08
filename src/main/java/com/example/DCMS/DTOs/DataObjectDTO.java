@@ -18,7 +18,7 @@ import java.util.Date;
 public class DataObjectDTO {
     private String id;
     @Email(message = "Not a valid email id")
-    private String useremail;
+    private String userEmail;
     private String username;
     @NotNull(message = "data cannot be null")
     private Object data;

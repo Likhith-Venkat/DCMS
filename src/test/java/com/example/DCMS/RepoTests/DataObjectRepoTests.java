@@ -30,7 +30,8 @@ public class DataObjectRepoTests
                 .username("abc")
                 .data("data")
                 .objectType(ObjectType.BIN)
-                .uniqueName("38271398721")
+                .uniqueName("3827139872BIN")
+                .status(Status.PENDING)
                 .build();
     }
 
@@ -61,7 +62,7 @@ public class DataObjectRepoTests
         List<DataObject> returnedObject = dor.findByStatusAndObjectType(Status.PENDING, ObjectType.BIN);
         //Assert
         Assertions.assertThat(returnedObject).isNotNull();
-        Assertions.assertThat(returnedObject.size()).isEqualTo(1);
+        Assertions.assertThat(returnedObject).hasSize(1);
     }
 
     @AfterEach

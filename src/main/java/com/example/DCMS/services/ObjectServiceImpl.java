@@ -1,10 +1,10 @@
 package com.example.DCMS.services;
 
 import com.example.DCMS.DTOs.ApproveDTO;
+import com.example.DCMS.DTOs.ApproveResponseDTO;
 import com.example.DCMS.DTOs.DataObjectDTO;
 import com.example.DCMS.DTOs.RejectDTO;
 import com.example.DCMS.enums.Method;
-import com.example.DCMS.enums.ObjectType;
 import com.example.DCMS.enums.Status;
 import com.example.DCMS.exception.AlreadyExistsException;
 import com.example.DCMS.exception.ResourceNotFoundException;
@@ -41,7 +41,7 @@ public class ObjectServiceImpl implements ObjectService {
 
 
     @Override
-    public DataObject approveObject(ApproveDTO req, HttpHeaders headers) {
+    public ApproveResponseDTO approveObject(ApproveDTO req, HttpHeaders headers) {
         log.info("Executing 'approve' by checker");
         String id = req.getId();
         String url = req.getUrl();
@@ -94,7 +94,7 @@ public class ObjectServiceImpl implements ObjectService {
 
             DataObject returnedObject =dataObjectRepo.save(savedObject);
             log.info("Executed 'approve' by checker");
-            return returnedObject;
+            return new ApproveResponseDTO(HttpStatus.OK, returnedObject.getStatus(), "NOT APPLICABLE", returnedObject.getData(), returnedObject);
 
         } catch (HttpClientErrorException e) {
             // Handle the case where the response status code is 400
@@ -105,10 +105,10 @@ public class ObjectServiceImpl implements ObjectService {
 
             DataObject returnedObject = dataObjectRepo.save(savedObject);
             log.info("Error occurred while executing 'approve' by checker");
-            return returnedObject;
+            return new ApproveResponseDTO(HttpStatus.BAD_REQUEST, returnedObject.getStatus(), returnedObject.getRejectReason(), returnedObject.getData(), returnedObject);
         }
         catch (HttpServerErrorException e) {
-            log.error("HTTP Server Error: {}", e.getRawStatusCode());
+            log.error("HTTP Server Error: {}", e.getStatusCode());
             throw e;
         }
     }

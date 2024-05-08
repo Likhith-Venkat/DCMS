@@ -11,7 +11,7 @@ import lombok.*;
 public class RejectDTO
 {
     @NotNull(message = "id cannot be null")
-    String id;
+    private String id;
     @NotNull(message = "rejectReason cannot be null")
-    String rejectReason;
+    private String rejectReason;
 }

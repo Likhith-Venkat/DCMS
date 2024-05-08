@@ -1,6 +1,7 @@
 package com.example.DCMS.DTOs;
 import lombok.*;
 
+@Data
 @Setter
 @Getter
 @AllArgsConstructor

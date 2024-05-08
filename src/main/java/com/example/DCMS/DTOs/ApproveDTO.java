@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
@@ -15,10 +16,10 @@ import lombok.*;
 public class ApproveDTO
 {
     @NotNull(message = "url cannot be null")
-    String url;
+    private String url;
     @Pattern(regexp = "POST|PUT|GET|DELETE", message = "Invalid method value")
     @NotNull(message = "Method cannot be null")
-    Method method;
+    private Method method;
     @NotNull(message = "id cannot be null")
-    String id;
+    private String id;
 }

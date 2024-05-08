@@ -1,6 +1,7 @@
 package com.example.DCMS.controllers;
 
 import com.example.DCMS.DTOs.ApproveDTO;
+import com.example.DCMS.DTOs.ApproveResponseDTO;
 import com.example.DCMS.DTOs.DataObjectDTO;
 import com.example.DCMS.DTOs.RejectDTO;
 import com.example.DCMS.enums.ObjectType;
@@ -33,7 +34,7 @@ public class ObjectController {
     private DataObjectRepo  dataObjectRepo;
 
     @PutMapping(path = "/approve")
-    public ResponseEntity<DataObject> approve(@RequestBody ApproveDTO req, HttpServletRequest servletRequest) {
+    public ResponseEntity<ApproveResponseDTO> approve(@RequestBody ApproveDTO req, HttpServletRequest servletRequest) {
 
         HttpHeaders headers = new HttpHeaders();
         Enumeration<String> headerNames = servletRequest.getHeaderNames();
@@ -45,9 +46,9 @@ public class ObjectController {
             String headerValue = servletRequest.getHeader(headerName);
             headers.add(headerName, headerValue);
         }
-        DataObject approvedObject =  objectService.approveObject(req, headers);
+        ApproveResponseDTO approvedObject =  objectService.approveObject(req, headers);
 
-        if(approvedObject.getStatus() == Status.REJECTED)
+        if(approvedObject.getDataObjectStatus() == Status.REJECTED)
             return new ResponseEntity<>(approvedObject, HttpStatus.BAD_REQUEST);
         return  new ResponseEntity<>(approvedObject, HttpStatus.OK);
     }
