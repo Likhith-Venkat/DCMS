@@ -37,8 +37,6 @@ public class ObjectServiceImpl implements ObjectService {
 
     @Autowired
     private ModelMapper modelMapper;
-
-    @Autowired
     private ObjectServiceTranslation objectServiceTranslation;
 
     RestTemplate restTemplate = new RestTemplate();

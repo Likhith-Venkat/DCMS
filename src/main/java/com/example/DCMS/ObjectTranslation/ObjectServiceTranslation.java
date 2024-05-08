@@ -2,6 +2,7 @@ package com.example.DCMS.ObjectTranslation;
 
 import com.example.DCMS.DTOs.DataObjectDTO;
 import com.example.DCMS.models.DataObject;
+import org.springframework.context.annotation.Bean;
 
 public class ObjectServiceTranslation
 {
